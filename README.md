@@ -1,0 +1,2 @@
+# QFNUClassSelector
+使用python实现的QFNU的抢课脚本

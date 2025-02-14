@@ -1,0 +1,67 @@
+[
+  {
+    "mDataProp": "kch",
+    "sTitle": "课程编号",
+    "sWidth": "120px"
+  },
+  {
+    "mDataProp": "kcmc",
+    "sTitle": "课程名"
+  },
+  {
+    "mDataProp": "fzmc",
+    "sTitle": "分组名"
+  },
+  {
+    "mDataProp": "xf",
+    "sTitle": "学分",
+    "sWidth": "50px",
+    "sClass": "center"
+  },
+  {
+    "mDataProp": "skls",
+    "sTitle": "上课老师"
+  },
+  {
+    "mDataProp": "sksj",
+    "sTitle": "上课时间"
+  },
+  {
+    "mDataProp": "skdd",
+    "sTitle": "上课地点"
+  },
+  {
+    "mDataProp": "xqmc",
+    "sTitle": "上课校区"
+  },
+  {
+    "mDataProp": "xxrs",
+    "sTitle": "限选人数",
+    "sWidth": "60px",
+    "sClass": "center"
+  },
+  {
+    "mDataProp": "xkrs",
+    "sTitle": "选课人数",
+    "sWidth": "60px",
+    "sClass": "center",
+    "bVisible": "flag1"
+  },
+  {
+    "mDataProp": "syrs",
+    "sTitle": "剩余量",
+    "sWidth": "60px",
+    "sClass": "center",
+    "bVisible": "flag2"
+  },
+  {
+    "mDataProp": "ctsm",
+    "sTitle": "时间冲突"
+  },
+  {
+    "mDataProp": "czOper",
+    "sTitle": "操作",
+    "sWidth": "80px",
+    "sClass": "center"
+  }
+]

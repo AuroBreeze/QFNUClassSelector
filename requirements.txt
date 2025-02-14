@@ -1,0 +1,6 @@
+requests
+BeautifulSoup4
+ddddocr
+toml
+pillow
+lxml

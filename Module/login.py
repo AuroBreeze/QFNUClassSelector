@@ -15,7 +15,7 @@ loginUrl = "http://zhjw.qfnu.edu.cn/Logon.do?method=logonLdap"
 dataStrUrl = "http://zhjw.qfnu.edu.cn/Logon.do?method=logon&flag=sess"
 
 def get_ocr_res(cap_pic_bytes):  # 识别验证码
-    ocr = ddddocr.DdddOcr()
+    ocr = ddddocr.DdddOcr(show_ad=False)
     res = ocr.classification(cap_pic_bytes)
     return res
 
@@ -156,8 +156,8 @@ def mainss():
     """
     print_welcome()
     # 获取环境变量
-    with open("../QFNUClassSelector/config.toml", "r", encoding="utf-8"):
-        config = toml.load("../QFNUClassSelector/config.toml")
+    with open("../config.toml", "r", encoding="utf-8"):
+        config = toml.load("../config.toml")
     user_account = config["username"]
     user_password = config["password"]
     # 模拟登录并获取会话

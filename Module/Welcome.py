@@ -2,7 +2,7 @@ from Module import Logging
 
 class main:
     def __init__(self):
-        self.log = Logging.Log()
+        self.log = Logging.Log("Welcome")
         self.log.main("INFO", "欢迎使用选课小助手")
         self.log.main("INFO", "PowerBy: AuroBreeze W1ndys")
         self.log.main("INFO", "Lisence： GPL-V3")

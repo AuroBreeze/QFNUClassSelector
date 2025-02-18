@@ -1,16 +1,10 @@
 import re
 from bs4 import BeautifulSoup
-from Module import login
-
-class Get_Session: # 获取session
-    def __init__(self):
-        self.session = login.mainss()
-    def Return_Session(self):
-        return self.session
+from Module import Logging
 
 class Session_Inherit:
-    def __init__(self):
-        self.session = Get_Session().Return_Session() #Get_Session()  # 继承session
+    def __init__(self,session):
+        self.session = session #Get_Session()  # 继承session
         self.url_list = []  # 保存所有选课的url
         """
         0:# 选课学分情况 http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xsxk_tzsm
@@ -46,12 +40,13 @@ class Session_Inherit:
         for i in list:
             url = "http://zhjw.qfnu.edu.cn" + i.a["href"]
             self.url_list.append(url)
-            print(i.a.string + " " + url)
+            #print(i.a.string + " " + url)
 
-        print("session继承成功")
+        #print("session继承成功")
+        Logging.Log("Inherit_Session").main("INFO", "session继承成功")
+
 
     def Return_Session(self):
         return self.session
 if __name__ == '__main__':
-    session_inherit = Session_Inherit().Return_Session()
-    print(session_inherit)
+    pass

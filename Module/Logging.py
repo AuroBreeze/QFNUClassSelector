@@ -21,8 +21,10 @@ class Log:
 
     def main(self, level, message):
         message = str(message)
-        self.handler.setFormatter(self.formatter)
-        self.logger.addHandler(self.handler)
+        # 检查是否已经添加了 handler
+        if not self.logger.handlers:
+            self.handler.setFormatter(self.formatter)
+            self.logger.addHandler(self.handler)
         if level == "DEBUG":
             self.logger.debug(message)
         elif level == "INFO":

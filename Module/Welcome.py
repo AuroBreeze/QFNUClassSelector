@@ -1,6 +1,6 @@
 from Module import Logging
 
-class Welcome:
+class main:
     def __init__(self):
         self.log = Logging.Log()
         self.log.main("INFO", "欢迎使用选课小助手")
@@ -15,5 +15,6 @@ class Welcome:
         self.log.main("INFO", "4. 使用本脚本表示使用者已经充分了解并同意以上声明。")
         self.log.main("INFO", "5. 开发者对使用本脚本造成的任何直接或间接损失不承担任何责任。")
 
+
 if __name__ == '__main__':
-    Welcome()
+    main()

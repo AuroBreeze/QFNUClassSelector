@@ -4,6 +4,7 @@ from io import BytesIO
 import ddddocr
 import os
 import toml
+from Module import Logging
 
 # 设置基本的URL和数据
 
@@ -39,13 +40,15 @@ def handle_captcha(session, cookies):
 
     # 添加调试信息
     if response.status_code != 200:
-        print(f"请求验证码失败，状态码: {response.status_code}")
+        #print(f"请求验证码失败，状态码: {response.status_code}")
+        Logging.Log("Login").main("ERROR","请求验证码失败，状态码: {response.status_code}")
         return None
 
     try:
         image = Image.open(BytesIO(response.content))
     except Exception as e:
-        print(f"无法识别图像文件: {e}")
+        #print(f"无法识别图像文件: {e}")
+        Logging.Log("Login").main("ERROR","无法识别图像文件: {e}")
         return None
 
     return get_ocr_res(image)
@@ -103,19 +106,6 @@ def login(session, cookies, user_account, user_password, random_code, encoded):
         loginUrl, headers=headers, data=data, cookies=cookies, timeout=1000
     )
 
-
-def get_user_credentials():
-    """
-    获取用户账号和密码
-    返回: (user_account, user_password)
-    """
-    user_account = os.getenv("USER_ACCOUNT")
-    user_password = os.getenv("USER_PASSWORD")
-    print(f"用户名: {user_account}\n")
-    print(f"密码: {user_password}\n")
-    return user_account, user_password
-
-
 def simulate_login(user_account, user_password):
     """
     模拟登录过程
@@ -136,34 +126,36 @@ def simulate_login(user_account, user_password):
         # 检查响应状态码和内容
         if response.status_code == 200:
             if "验证码错误!!" in response.text:
-                print(f"验证码识别错误，重试第 {attempt + 1} 次\n")
+                #print(f"验证码识别错误，重试第 {attempt + 1} 次\n")
+                Logging.Log("Login").main("ERROR",f"验证码识别错误，重试第 {attempt + 1} 次\n")
                 continue  # 继续尝试
             if "密码错误" in response.text:
-                raise Exception("用户名或密码错误")
-            print("登录成功，cookies已返回\n")
+                #raise Exception("用户名或密码错误")
+                Logging.Log("Login").main("ERROR","用户名或密码错误")
+            #print("登录成功，cookies已返回\n")
+            Logging.Log("Login").main("INFO","登录成功，cookies已返回\n")
             return session
         else:
             raise Exception("登录失败")
 
-    raise Exception("验证码识别错误，请重试")
+    #raise Exception("验证码识别错误，请重试")
+    Logging.Log("Login").main("ERROR","验证码识别错误，请重试")
 
 
-def print_welcome():
-    pass
 def mainss():
     """
     主函数，协调整个程序的执行流程
     """
-    print_welcome()
     # 获取环境变量
-    with open("../config.toml", "r", encoding="utf-8"):
-        config = toml.load("../config.toml")
+    with open("./config.toml", "r", encoding="utf-8"):
+        config = toml.load("./config.toml")
     user_account = config["username"]
     user_password = config["password"]
     # 模拟登录并获取会话
 
     session = simulate_login(user_account, user_password)
-    print(session)
+    #print(session)
+    Logging.Log("Login").main("INFO",session)
     return session
 
     # url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xklc_list"

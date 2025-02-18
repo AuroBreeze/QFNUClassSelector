@@ -20,6 +20,7 @@ class Log:
             })
 
     def main(self, level, message):
+        message = str(message)
         self.handler.setFormatter(self.formatter)
         self.logger.addHandler(self.handler)
         if level == "DEBUG":

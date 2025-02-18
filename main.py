@@ -1,12 +1,18 @@
-from Module import URL_encode, login,Logging,Welcome,Session_inherit,Select_class,Submit_class,Data
+from Module import URL_encode, login,Logging,Welcome,Session_inherit,Select_class,Submit_class,Data,Check_toml
 
 class QFNUClassSelector:
     def __init__(self):
+
         pass
 
     def run(self):
         Welcome.main()
-        #Logging.Log().main("info", "QFNUClassSelector started")
+        bool_config = Check_toml.main().Return_bool()
+
+        if bool_config == False:
+            return
+        Logging.Log().main("INFO", "QFNUClassSelector started")
+
         session = login.mainss()
         session  = Session_inherit.Session_Inherit(session).Return_Session()
         Select_class.Select_Class(session,Data.Fixed_Data,kcxx=f"{URL_encode.Encode("乒乓球")}")

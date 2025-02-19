@@ -31,6 +31,14 @@ class main:
                     Logging.Log("Check_config").main("ERROR", f'部分{section}中缺少字段{field}')
                     self.bool = False
 
+        # 新增对username和password长度的检测
+        if 'Server' in self.config:
+            username = self.config['Server'].get('username', '')
+            password = self.config['Server'].get('password', '')
+            if len(username) != len(password):
+                Logging.Log("Check_config").main("ERROR", 'username和password的长度必须一致')
+                self.bool = False
+
         self.check_mode_section()
         self.check_plan_section()
         self.check_time_section()

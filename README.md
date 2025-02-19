@@ -59,7 +59,14 @@ QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲�
 
 特别感谢以下贡献者：
 
-- [W1ndys](https://github.com/W1ndys)
+- [W1ndys](https://github.com/W1ndys) - login.py 代码,技术指导分享
+
+## 🔗 友情链接
+
+- [QFNUCourseSelector](https://github.com/W1ndys/QFNUCourseSelector)
+
+> QFNU 抢课脚本 | 强智教务抢课脚本 | 强智教务 2017 | 大学抢课脚本 | 学院抢课脚本 | 光速抢课 | 秒级抢课
+> Author: W1ndys
 
 ## 📄 许可证
 

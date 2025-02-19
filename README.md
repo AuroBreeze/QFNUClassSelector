@@ -59,7 +59,7 @@ QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲�
 
 特别感谢以下贡献者：
 
-- [Windys](https://github.com/W1ndys)
+- [W1ndys](https://github.com/W1ndys)
 
 ## 📄 许可证
 

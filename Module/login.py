@@ -142,15 +142,17 @@ def simulate_login(user_account, user_password):
     Logging.Log("Login").main("ERROR","验证码识别错误，请重试")
 
 
-def mainss():
+def mainss(index):
     """
     主函数，协调整个程序的执行流程
     """
-    # 获取环境变量
     with open("./config.toml", "r", encoding="utf-8"):
         config = toml.load("./config.toml")
-    user_account = config["username"]
-    user_password = config["password"]
+    user_account = config["Server"]["username"][index]
+    user_password = config["Server"]["password"][index]
+
+    #print(f"正在登录账号: {user_account}...")
+
     # 模拟登录并获取会话
 
     session = simulate_login(user_account, user_password)
@@ -158,9 +160,5 @@ def mainss():
     Logging.Log("Login").main("INFO",session)
     return session
 
-    # url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xklc_list"
-    # response = session().get(url=url).text
-    # print(response)
-
 if __name__ == "__main__":
-    mainss()
+    mainss(0)

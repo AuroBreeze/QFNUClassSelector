@@ -13,7 +13,8 @@ class Timer: # 定时任务类，执行定时任务的时间计时逻辑
         self.interval = self.config["Time"]["Interval"]
     def run(self):
         while True:
-            now = datetime.datetime.now().strftime("%H:%M")
+            now = datetime.datetime.now().strftime("%H:%M:%S")
+            #print(f"当前时间：{now}")
 
             if now < self.start_time:
                 self.log.main("INFO", f"选课未执行：当前时间：{now}, 等待时间：{self.start_time}开始, 间隔时间：{self.retry_time/1000}秒")
@@ -35,3 +36,6 @@ class Timer: # 定时任务类，执行定时任务的时间计时逻辑
             "interval": self.interval,
         }
         return config
+if __name__ == '__main__':
+    timer = Timer()
+    timer.run()

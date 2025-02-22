@@ -1,12 +1,18 @@
 import colorlog
 
 class Log:
-    def __init__(self, name="main"):
+    def __init__(self, name="main", level="INFO"):
         self.name = name
-        self.logger = colorlog.getLogger(self.name)
-        self.logger.setLevel(colorlog.DEBUG)
-        self.handler = colorlog.StreamHandler()
-        self.handler.setLevel(colorlog.DEBUG)
+        if level == "INFO":
+            self.logger = colorlog.getLogger(self.name)
+            self.logger.setLevel(colorlog.INFO)
+            self.handler = colorlog.StreamHandler()
+            self.handler.setLevel(colorlog.INFO)
+        elif level == "DEBUG":
+            self.logger = colorlog.getLogger(self.name)
+            self.logger.setLevel(colorlog.DEBUG)
+            self.handler = colorlog.StreamHandler()
+            self.handler.setLevel(colorlog.DEBUG)
         # 修改日志格式，使其更美观
         self.formatter = colorlog.ColoredFormatter(
             '%(log_color)s[%(asctime)s][%(name)s][%(levelname)s] [%(message)s]',
@@ -38,4 +44,4 @@ class Log:
         else:
             self.logger.error("日志输出等级设置错误")
 if __name__ == '__main__':
-    Log("root").main("Debug","Debug")
+    Log("root").main("DEBUG","Debug")

@@ -2,6 +2,7 @@ from Module import URL_encode, login,Logging,Welcome,Session_inherit,Select_clas
 
 class QFNUClassSelector:
     def __init__(self):
+        self.log = Logging.Log()
         pass
 
     def run(self):
@@ -9,7 +10,7 @@ class QFNUClassSelector:
         bool_config = Check_toml.main().Return_bool()
         if bool_config == False:
             return
-        Logging.Log().main("INFO", "QFNUClassSelector started")
+        self.log.main("INFO", "QFNUClassSelector started")
 
         #session = login.mainss(0)
         index = 0

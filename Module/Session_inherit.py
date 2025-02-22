@@ -8,6 +8,7 @@ import time
 class Session_Inherit:
     def __init__(self,index):
         self.session = login.mainss(index)  # 继承session
+        self.log= Logging.Log("Inherit_Session")
         self.index = index  # 保存当前登录的序号
         self.config = Timer.Timer().Return_config()
         self.url_list = []  # 保存所有选课的url
@@ -36,7 +37,7 @@ class Session_Inherit:
 
                 #若没有选课，则从这里开始，下面的代码都会报错。
                 #若有选课，则从这里开始，下面的代码都可以正常运行。
-                Logging.Log("Inherit_Session").main("DEBUG", "选课学分情况页面分界线，若在此处及以下出现DEBUG报错，则说明没有到选课时间")
+                self.log.main("DEBUG", "选课学分情况页面分界线，若在此处及以下出现DEBUG报错，则说明没有到选课时间")
 
                 fragment = soup.select("#jrxk")[0]["href"]
                 url_2 = "http://zhjw.qfnu.edu.cn" + fragment
@@ -53,27 +54,27 @@ class Session_Inherit:
                     self.url_list.append(url)
                     # print(i.a.string + " " + url)
                 # print("session继承成功")
-                Logging.Log("Inherit_Session").main("INFO", "session继承成功")
+                self.log.main("INFO", "session继承成功")
             except Exception as e:
-                Logging.Log("Inherit_Session").main("DEBUG", f"session继承失败，原因：{e}")
-                Logging.Log("Inherit_Session").main("DEBUG", f"第{count + 1}次,间隔：{self.config['retry_time']/1000}秒,正在尝试重新继承session......")
+                self.log.main("DEBUG", f"session继承失败，原因：{e}")
+                self.log.main("DEBUG", f"第{count + 1}次,间隔：{self.config['retry_time']/1000}秒,正在尝试重新继承session......")
                 count += 1
                 if count >= 100:
-                    Logging.Log("Inherit_Session").main("INFO", f"Session重新获取......")
+                    self.log.main("INFO", f"Session重新获取......")
                     count = 0
                     Session_judge = self.Get_Session_New()
                     if Session_judge == False:
-                        Logging.Log("Inherit_Session").main("ERROR", "Session获取失败，请联系开发者")
+                        self.log.main("ERROR", "Session获取失败，请联系开发者")
 
                 time.sleep(self.config['retry_time']/1000)
     def Get_Session_New(self):
         session_old = self.session
         self.session = login.mainss(self.index)
         if session_old.cookies.get_dict() !=self.session.cookies.get_dict():
-            Logging.Log("Inherit_Session").main("INFO", "Session重新获取成功")
+            self.log.main("INFO", "Session重新获取成功")
             return True
         else:
-            Logging.Log("Inherit_Session").main("ERROR", "Session重新获取失败")
+            self.log.main("ERROR", "Session重新获取失败")
             return False
 
     def Return_Session(self):

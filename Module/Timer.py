@@ -4,7 +4,7 @@ import toml
 from Module import Logging
 class Timer: # 定时任务类，执行定时任务的时间计时逻辑
     def __init__(self):
-        self.log = Logging.Log()
+        self.log = Logging.Log("Timer")
         with open("./config.toml") as f:
             self.config = toml.load(f)
         self.start_time = self.config["Time"]["Start_time"]

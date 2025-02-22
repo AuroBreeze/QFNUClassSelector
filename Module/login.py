@@ -15,6 +15,7 @@ loginUrl = "http://zhjw.qfnu.edu.cn/Logon.do?method=logonLdap"
 # 初始数据请求URL
 dataStrUrl = "http://zhjw.qfnu.edu.cn/Logon.do?method=logon&flag=sess"
 
+log = Logging.Log("Login")
 def get_ocr_res(cap_pic_bytes):  # 识别验证码
     ocr = ddddocr.DdddOcr(show_ad=False)
     res = ocr.classification(cap_pic_bytes)
@@ -41,14 +42,14 @@ def handle_captcha(session, cookies):
     # 添加调试信息
     if response.status_code != 200:
         #print(f"请求验证码失败，状态码: {response.status_code}")
-        Logging.Log("Login").main("ERROR","请求验证码失败，状态码: {response.status_code}")
+        log.main("ERROR","请求验证码失败，状态码: {response.status_code}")
         return None
 
     try:
         image = Image.open(BytesIO(response.content))
     except Exception as e:
         #print(f"无法识别图像文件: {e}")
-        Logging.Log("Login").main("ERROR","无法识别图像文件: {e}")
+        log.main("ERROR","无法识别图像文件: {e}")
         return None
 
     return get_ocr_res(image)
@@ -127,19 +128,19 @@ def simulate_login(user_account, user_password):
         if response.status_code == 200:
             if "验证码错误!!" in response.text:
                 #print(f"验证码识别错误，重试第 {attempt + 1} 次\n")
-                Logging.Log("Login").main("ERROR",f"验证码识别错误，重试第 {attempt + 1} 次\n")
+                log.main("ERROR",f"验证码识别错误，重试第 {attempt + 1} 次\n")
                 continue  # 继续尝试
             if "密码错误" in response.text:
                 #raise Exception("用户名或密码错误")
-                Logging.Log("Login").main("ERROR","用户名或密码错误")
+                log.main("ERROR","用户名或密码错误")
             #print("登录成功，cookies已返回\n")
-            Logging.Log("Login").main("INFO","登录成功，cookies已返回\n")
+            log.main("INFO","登录成功，cookies已返回\n")
             return session
         else:
             raise Exception("登录失败")
 
     #raise Exception("验证码识别错误，请重试")
-    Logging.Log("Login").main("ERROR","验证码识别错误，请重试")
+    log.main("ERROR","验证码识别错误，请重试")
 
 
 def mainss(index):
@@ -157,7 +158,7 @@ def mainss(index):
 
     session = simulate_login(user_account, user_password)
     #print(session)
-    Logging.Log("Login").main("INFO",session)
+    log.main("INFO",session)
     return session
 
 if __name__ == "__main__":

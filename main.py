@@ -11,8 +11,9 @@ class QFNUClassSelector:
             return
         Logging.Log().main("INFO", "QFNUClassSelector started")
 
-        session = login.mainss(0)
-        session  = Session_inherit.Session_Inherit(session).Return_Session()
+        #session = login.mainss(0)
+        index = 0
+        session  = Session_inherit.Session_Inherit(index).Return_Session()
         Select_class.Select_Class(session,Data.Fixed_Data,kcxx=f"{URL_encode.Encode("乒乓球")}")
         Submit_class.Submit_ClassSelection(session,jx0404id="202420252011613",kcid="530128")
     def MultiAccount(self):

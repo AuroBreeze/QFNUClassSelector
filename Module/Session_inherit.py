@@ -59,7 +59,7 @@ class Session_Inherit:
                 self.log.main("DEBUG", f"session继承失败，原因：{e}")
                 self.log.main("DEBUG", f"第{count + 1}次,间隔：{self.config['retry_time']/1000}秒,正在尝试重新继承session......")
                 count += 1
-                if count >= 100:
+                if count >= 20:  # 尝试20次，若失败则退出
                     self.log.main("INFO", f"Session重新获取......")
                     count = 0
                     Session_judge = self.Get_Session_New()
@@ -67,7 +67,7 @@ class Session_Inherit:
                         self.log.main("ERROR", "Session获取失败，请联系开发者")
 
                 time.sleep(self.config['retry_time']/1000)
-    def Get_Session_New(self):
+    def Get_Session_New(self): # 重新获取session
         session_old = self.session
         self.session = login.mainss(self.index)
         if session_old.cookies.get_dict() !=self.session.cookies.get_dict():

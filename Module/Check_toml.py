@@ -1,17 +1,62 @@
 import toml
 from Module import Logging
 import re
+import os
 
 class main:
     def __init__(self):
         self.bool = True  # True表示配置文件正确，False表示配置文件错误
         self.log = Logging.Log("Check_config")
+
+        try: #此文件用来统计配置文件中列表及子列表的长度
+            # 读取check.toml文件，如果不存在则创建
+
+            with open('./check.toml', 'r') as f:
+                self.check = toml.load(f)
+        except FileNotFoundError:
+            self.log.main("ERROR", '未找到check.toml文件')
+            self.bool = False
+
         try:
             with open('./config.toml', 'r') as f:
                 self.config = toml.load(f)
         except FileNotFoundError:
             self.log.main("ERROR", '未找到config.toml文件')
             self.bool = False
+
+    def count_list_lengths(self):
+        """统计config.toml文件中列表及子列表的长度，并写入check.toml文件"""
+        lengths = {}
+
+        if 'Plan' in self.config:
+            plan = self.config['Plan']
+            lengths['Plan'] = {
+                'Course_name': len(plan.get('Course_name', [])),
+                'Teachers_name': [len(sublist) for sublist in plan.get('Teachers_name', [])],
+                'Time_period': [len(sublist) for sublist in plan.get('Time_period', [])],
+                'Week_day': [len(sublist) for sublist in plan.get('Week_day', [])],
+                'Multiple_Judge': len(plan.get('Multiple_Judge', [])),
+                'Multiple_account': [len(sublist) for sublist in plan.get('Multiple_account', [])]
+            }
+
+        if 'Server' in self.config:
+            server = self.config['Server']
+            lengths['Server'] = {
+                'username': len(server.get('username', [])),
+                'password': len(server.get('password', []))
+            }
+
+        if 'Mode' in self.config:
+            mode = self.config['Mode']
+            lengths['Mode'] = {
+                'Select': len(mode.get('Select', []))
+            }
+
+        # 将统计结果写入check.toml文件
+        with open('./check.toml', 'w') as f:
+            toml.dump(lengths, f)
+
+        self.log.main("INFO", '已成功统计列表长度并写入check.toml文件')
 
     def check_config(self):
         required_fields = {
@@ -155,4 +200,4 @@ class main:
         return self.bool
 
 if __name__ == '__main__':
-    main().check_config()
+    main().count_list_lengths()

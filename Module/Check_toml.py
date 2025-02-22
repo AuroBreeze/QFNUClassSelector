@@ -135,7 +135,7 @@ class main:
 
     def check_time_section(self):
         # 检查Start_time和End_time的时间格式是否正确
-        time_format = re.compile(r'^([01]\d|2[0-3]):([0-5]\d)$')
+        time_format = re.compile(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$')
         start_time = self.config['Time'].get('Start_time')
         end_time = self.config['Time'].get('End_time')
 

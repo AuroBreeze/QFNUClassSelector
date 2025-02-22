@@ -5,7 +5,7 @@
     <img src="https://img.shields.io/github/stars/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Stars">
     <img src="https://img.shields.io/github/issues/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Issues">
     <img src="https://img.shields.io/badge/Python-3.12.3-blue.svg" alt="Python">
-    <img src="https://img.shields.io/badge/状态-开发完成-green.svg" alt="Status">
+    <img src="https://img.shields.io/badge/状态-开发中-green.svg" alt="Status">
     <img src="https://img.shields.io/badge/License-GPL-green.svg" alt="License">
     <img src="https://img.shields.io/github/forks/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Forks">
     <img src="https://img.shields.io/github/watchers/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Watchers">

@@ -6,7 +6,7 @@ class main:
         self.log.main("INFO", "欢迎使用选课小助手")
         self.log.main("INFO", "PowerBy: AuroBreeze W1ndys")
         self.log.main("INFO", "Lisence： GPL-V3")
-        self.log.main("INFO", "Version： 1.0.6")
+        self.log.main("INFO", "Version： 1.1.0")
         self.log.main("INFO", "项目地址：https://github.com/AuroBreeze/QFNUClassSelector")
         self.log.main("INFO", "免责声明")
         self.log.main("INFO", "1. 本脚本仅供学习和研究目的，用于了解网络编程和自动化技术的实现原理。")

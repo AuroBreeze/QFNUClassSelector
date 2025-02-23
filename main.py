@@ -9,7 +9,7 @@ class QFNUClassSelector:
         time_start = time.time()
 
         Welcome.main()
-        Check_toml.main().Return_bool()
+        # Check_toml.main().Return_bool()
         self.log.main("INFO", "QFNUClassSelector started")
 
         if Timer.Timer().run() == False:

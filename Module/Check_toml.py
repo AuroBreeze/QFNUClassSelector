@@ -198,10 +198,6 @@ class main:
         else:
             self.log.main("ERROR", 'config.toml配置文件错误')
             self.log.main("ERROR", '请检查配置文件')
-            self.log.main("ERROR", '正在退出程序...')
-            self.log.main("ERROR","按任意键退出...")
-            input()
-            exit()
         # 返回配置文件是否正确
         return self.bool
 

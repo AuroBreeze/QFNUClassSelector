@@ -1,14 +1,14 @@
 [Plan]
 Course_name = 3
 Teachers_name = [ 2, 2, 0,]
-Time_period = [ 2, 0, 0,]
+Time_period = [ 1, 0, 0,]
 Week_day = [ 2, 0, 0,]
 Multiple_Judge = 3
-Multiple_account = [ 2, 0, 0,]
+Multiple_account = [ 0, 0, 0,]
 
 [Server]
-username = 2
-password = 2
+username = 1
+password = 1
 
 [Mode]
 Select = 2

@@ -178,6 +178,24 @@ class main:
                         self.log.main("ERROR", 'config.toml文件中Week_day中的每个元素必须为字符串类型且值在1到7之间')
                         self.bool = False
 
+        # 新增对Course_order的检查
+        course_order = self.config.get('Plan', {}).get('Course_order', [])
+        if len(course_names) != len(course_order):
+            self.log.main("ERROR", 'config.toml文件中Plan部分Course_order的子列表数量与Course_name不匹配')
+            self.bool = False
+
+        # 检查Course_order中的每个子列表中的元素是否合法
+        valid_course_orders = ['0', '1', '2', '3', '4', '5', '6', '']
+        for order_list in course_order:
+            if not isinstance(order_list, list):
+                self.log.main("ERROR", 'config.toml文件中Course_order中的每个子列表必须为列表类型')
+                self.bool = False
+                continue
+            for item in order_list:
+                if not isinstance(item, str) or (item and item not in valid_course_orders):
+                    self.log.main("ERROR", f'config.toml文件中Course_order中的元素必须为字符串类型且值在{valid_course_orders}中')
+                    self.bool = False
+
     def check_time_section(self):
         # 检查Start_time和End_time的时间格式是否正确
         time_format = re.compile(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$')

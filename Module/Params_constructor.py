@@ -1,13 +1,23 @@
 import json
 from itertools import product
 import toml
+from Module import Logging
 
 class ParamsConstructor:
-    def __init__(self, course_name, teachers_name, time_period, week_day):
-        self.course_name = course_name
-        self.teachers_name = teachers_name
-        self.time_period = time_period
-        self.week_day = week_day
+    def __init__(self):
+        self.log = Logging.Log("Params_constructor")
+        try:
+            # 从config.toml文件中读取配置
+            self.config = toml.load("/home/aurobreeze/code/Python/QFNUClassSelector/config.toml")
+        except Exception as e:
+            self.log.main("ERROR","config.toml文件读取失败，请检查文件路径或格式是否正确")
+            self.log.main("ERROR",f"退出程序")
+            exit()
+
+        self.course_name = self.config["Plan"]["Course_name"]
+        self.teachers_name = self.config["Plan"]["Teachers_name"]
+        self.time_period = self.config["Plan"]["Time_period"]
+        self.week_day = self.config["Plan"]["Week_day"]
 
     def generate_params(self):
         # 构造params字典，键为课程名称，值为该课程对应的参数列表
@@ -43,23 +53,22 @@ class ParamsConstructor:
                     "skxq_xx0103": 1
                 }
                 course_params.append(params)
-            
             params_dict[course] = course_params
         
         return params_dict
 
-    def write_to_json(self, file_path):
-        params_dict = self.generate_params()
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(params_dict, f, ensure_ascii=False, indent=4)
+    def write_to_json(self, file_path="./params.json"):
+        try:
+            params_dict = self.generate_params()
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(params_dict, f, ensure_ascii=False, indent=4)
+            self.log.main("INFO", f"params.json文件已生成，路径：{file_path}")
 
-# 从config.toml文件中读取配置
-config = toml.load("/home/aurobreeze/code/Python/QFNUClassSelector/config.toml")
-course_name = config["Plan"]["Course_name"]
-teachers_name = config["Plan"]["Teachers_name"]
-time_period = config["Plan"]["Time_period"]
-week_day = config["Plan"]["Week_day"]
+        except Exception as e:
+            self.log.main("ERROR", f"params.json文件生成失败，错误信息：{e}")
+            self.log.main("ERROR","退出程序")
+            exit()
 
 # 实例化ParamsConstructor并生成params.json文件
-constructor = ParamsConstructor(course_name, teachers_name, time_period, week_day)
-constructor.write_to_json("params.json")
+constructor = ParamsConstructor()
+constructor.write_to_json()

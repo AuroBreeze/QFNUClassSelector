@@ -10,8 +10,8 @@ class ParamsConstructor:
         self.week_day = week_day
 
     def generate_params(self):
-        # 构造params列表
-        params_list = []
+        # 构造params字典，键为课程名称，值为该课程对应的参数列表
+        params_dict = {}
         for i, course in enumerate(self.course_name):
             # 获取对应索引的子列表
             teachers = self.teachers_name[i] if i < len(self.teachers_name) else []
@@ -25,6 +25,7 @@ class ParamsConstructor:
             if not combinations:
                 combinations = [(course, "", "", "")]
             
+            course_params = []
             for combination in combinations:
                 course, teachers, time, week = combination
                 # 确保每个字段只有一个值
@@ -41,14 +42,16 @@ class ParamsConstructor:
                     "sfxx": True,
                     "skxq_xx0103": 1
                 }
-                params_list.append(params)
+                course_params.append(params)
+            
+            params_dict[course] = course_params
         
-        return params_list
+        return params_dict
 
     def write_to_json(self, file_path):
-        params_list = self.generate_params()
+        params_dict = self.generate_params()
         with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(params_list, f, ensure_ascii=False, indent=4)
+            json.dump(params_dict, f, ensure_ascii=False, indent=4)
 
 # 从config.toml文件中读取配置
 config = toml.load("/home/aurobreeze/code/Python/QFNUClassSelector/config.toml")

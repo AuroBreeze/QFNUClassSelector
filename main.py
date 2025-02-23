@@ -5,14 +5,11 @@ class QFNUClassSelector:
     def __init__(self):
         self.log = Logging.Log()
         pass
-
     def run(self):
         time_start = time.time()
 
         Welcome.main()
-        bool_config = Check_toml.main().Return_bool()
-        if bool_config == False:
-            return
+        Check_toml.main().Return_bool()
         self.log.main("INFO", "QFNUClassSelector started")
 
         if Timer.Timer().run() == False:
@@ -35,8 +32,4 @@ class QFNUClassSelector:
         pass
 
 if __name__ == '__main__':
-
     QFNUClassSelector().run()
-
-    #print("Time used:", time_end - time_start)
-

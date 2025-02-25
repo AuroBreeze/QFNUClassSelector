@@ -23,23 +23,36 @@ class ParamsConstructor:
         # 构造params字典，键为课程名称，值为该课程对应的参数列表
         params_dict = {}
         for i, course in enumerate(self.course_name):
-            course = URL_encode.Encode(course).Get_encode()#转为URL编码格式
             
             # 获取对应索引的子列表
             teachers = self.teachers_name[i] if i < len(self.teachers_name) else []
-            teachers = [URL_encode.Encode(teacher).Get_encode() for teacher in teachers]#转为URL编码格式
             #print(teachers)
             
             time = self.time_period[i] if i < len(self.time_period) else []
             week = self.week_day[i] if i < len(self.week_day) else []
             
+            
+            #检测
+            self.log.main("DEBUG","生成检测数据，请查看下列数据")
+            self.log.main("DEBUG",f"课程名称：{course}, 教师名称：{teachers}, 时间段：{time}, 星期：{week}")
+            
+            
+            # 转为URL编码格式
+            course = str(URL_encode.Encode(course).Get_encode())
+            teachers = [str(URL_encode.Encode(teacher).Get_encode()) for teacher in teachers]#转为URL编码格式
+            
+            #检测
+            self.log.main("DEBUG","转为URL编码格式后的数据，请查看下列数据")
+            self.log.main("DEBUG",f"课程名称：{course}, 教师名称：{teachers}, 时间段：{time}, 星期：{week}")
+            
             # 生成对应子列表的全排列
             combinations = list(product([course], teachers, time, week))
+            
             
             # 如果子列表为空，生成一个包含空字段的组合
             if not combinations:
                 combinations = [(course, "", "", "")]
-            
+
             course_params = []
             for combination in combinations:
                 course, teachers, time, week = combination

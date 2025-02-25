@@ -1,7 +1,7 @@
 import json
 from itertools import product
 import toml
-from Module import Logging
+from Module import Logging,URL_encode
 
 class ParamsConstructor:
     def __init__(self):
@@ -11,7 +11,7 @@ class ParamsConstructor:
             self.config = toml.load("./config.toml")
         except Exception as e:
             self.log.main("ERROR","config.toml文件读取失败，请检查文件路径或格式是否正确")
-            self.log.main("ERROR",f"退出程序")
+            self.log.main("ERROR","退出程序")
             exit()
 
         self.course_name = self.config["Plan"]["Course_name"]
@@ -23,8 +23,13 @@ class ParamsConstructor:
         # 构造params字典，键为课程名称，值为该课程对应的参数列表
         params_dict = {}
         for i, course in enumerate(self.course_name):
+            course = URL_encode.Encode(course).Get_encode()#转为URL编码格式
+            
             # 获取对应索引的子列表
             teachers = self.teachers_name[i] if i < len(self.teachers_name) else []
+            teachers = [URL_encode.Encode(teacher).Get_encode() for teacher in teachers]#转为URL编码格式
+            #print(teachers)
+            
             time = self.time_period[i] if i < len(self.time_period) else []
             week = self.week_day[i] if i < len(self.week_day) else []
             

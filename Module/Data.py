@@ -60,7 +60,7 @@ class Fixed_Data:
             return self.data_str
         elif self.output == "Params":
             return self.config_json
-        elif self.output == "Url":
+        elif self.output == "URL":
             return self.url_list
         else:
             self.log.main("ERROR", "Return_Data: 无效的请求参数")

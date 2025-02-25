@@ -1,5 +1,8 @@
+from cv2.typing import map_int_and_double
+
 from Module import Logging,Data
 import time
+import toml
 
 class Select_Class:
     def __init__(self,session):
@@ -8,16 +11,20 @@ class Select_Class:
         self.session = session
 
         #self.url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk"
+
+    def Get_Course_order(self):
+        with open("./config.toml","r",encoding="utf-8") as f:
+            config = toml.load(f)
+
+        order = config["Plan"]["Course_order"]
+        print(order)
+    def Get_Source(self):
         self.url_list = Data.Fixed_Data(output="Url").Return_Data()
         self.data = Data.Fixed_Data(output="Data").Return_Data()
         self.params = Data.Fixed_Data(output="Params").Return_Data()
-
-    def Return_Data(self,Fixed_Data):
-        #self.params = Fixed_Data(output="Params",kcxx=kcxx, skls=skls, skxq=skxq, skjc=skjc, sfym=sfym, sfct=sfct, sfxx=sfxx, skxq_xx0103=skxq_xx0103).Return_Data()
-        self.data = Fixed_Data(output="Data").Return_Data()
     def main(self):
-        res = self.session.get(url=self.url,params=self.params).text
-        res = self.session.post(url=self.url,params=self.params,data=self.data).json()
+        res = self.session.get(url=self.url_list[0],params=self.params).text
+        res = self.session.post(url=self.url_list[0],params=self.params,data=self.data).json()
         print(res)
 
 
@@ -36,4 +43,6 @@ class Submit_ClassSelection:
         #print(res)
         self.log.main("INFO",res)
 
-
+if __name__ == '__main__':
+    Select_Class(None).Get_Source()
+    Select_Class(None).main()

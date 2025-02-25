@@ -1,23 +1,19 @@
-from Module import Logging,URL_encode
+from Module import Logging,Data
 import time
 
 class Select_Class:
     def __init__(self,session):
         self.log = Logging.Log("Select_Class")
+
         self.session = session
-        self.url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk"
 
-        # 选课学分情况 http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xsxk_tzsm
-        # 必修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInBxxk
-        # 选修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInXxxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkXxxk?
-        # 本学期计划选课.json http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInBxqjhxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkBxqjhxk?
-        # 专业内跨年级选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInKnjxk  查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkKnjxk?
-        # 计划外选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInFawxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkFawxk?
-        # 公选课选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInGgxxkxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk?
-        # 辅修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInFxzyxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkFxxk?
+        #self.url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk"
+        self.url_list = Data.Fixed_Data(output="Url").Return_Data()
+        self.data = Data.Fixed_Data(output="Data").Return_Data()
+        self.params = Data.Fixed_Data(output="Params").Return_Data()
 
-    def Return_Data(self,Fixed_Data,kcxx="",skls="",skxq="",skjc="",sfym="false",sfct="false",sfxx="true",skxq_xx0103=""):
-        self.params = Fixed_Data(output="Params",kcxx=kcxx, skls=skls, skxq=skxq, skjc=skjc, sfym=sfym, sfct=sfct, sfxx=sfxx, skxq_xx0103=skxq_xx0103).Return_Data()
+    def Return_Data(self,Fixed_Data):
+        #self.params = Fixed_Data(output="Params",kcxx=kcxx, skls=skls, skxq=skxq, skjc=skjc, sfym=sfym, sfct=sfct, sfxx=sfxx, skxq_xx0103=skxq_xx0103).Return_Data()
         self.data = Fixed_Data(output="Data").Return_Data()
     def main(self):
         res = self.session.get(url=self.url,params=self.params).text

@@ -26,6 +26,9 @@ class main:
 
     def count_list_lengths(self):
         """统计config.toml文件中列表及子列表的长度，并写入check.toml文件"""
+        if self.bool==False:
+            self.log.main("WARN", 'config.toml文件配置错误，check.toml文件未生成')
+            return
         lengths = {}
 
         if 'Plan' in self.config:
@@ -215,7 +218,7 @@ class main:
             self.log.main("INFO", 'config.toml配置文件正确')
         else:
             self.log.main("ERROR", 'config.toml配置文件错误')
-            self.log.main("ERROR", '请检查配置文件')
+            #self.log.main("ERROR", '请检查配置文件')
         # 返回配置文件是否正确
         return self.bool
 

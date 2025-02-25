@@ -154,7 +154,7 @@ class main:
             self.bool = False
 
         # 检查Time_period中的每个子列表是否包含2到3个元素，且每个元素是否为字符串
-        valid_time_periods = ['1-2', '3-4', '5-6', '7-8', '9-10-11', '12-13']
+        valid_time_periods = ['1-2-', '3-4-', '5-6-', '7-8-', '9-10-11', '12-13-']
         for period in time_period:
             if not isinstance(period, list):
                 self.log.main("ERROR", 'config.toml文件中Time_period中的每个子列表必须为列表类型')

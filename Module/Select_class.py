@@ -1,5 +1,3 @@
-from cv2.typing import map_int_and_double
-
 from Module import Logging,Data
 import time
 import toml
@@ -7,25 +5,25 @@ import toml
 class Select_Class:
     def __init__(self,session):
         self.log = Logging.Log("Select_Class")
-
         self.session = session
-
         #self.url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk"
+
+        self.Get_Course_order()
+        self.Get_Source()
 
     def Get_Course_order(self):
         with open("./config.toml","r",encoding="utf-8") as f:
             config = toml.load(f)
-
-        order = config["Plan"]["Course_order"]
-        print(order)
+        self.curse_order = config["Plan"]["Course_order"]
     def Get_Source(self):
         self.url_list = Data.Fixed_Data(output="Url").Return_Data()
         self.data = Data.Fixed_Data(output="Data").Return_Data()
         self.params = Data.Fixed_Data(output="Params").Return_Data()
-    def main(self):
-        res = self.session.get(url=self.url_list[0],params=self.params).text
-        res = self.session.post(url=self.url_list[0],params=self.params,data=self.data).json()
-        print(res)
+
+    def main(self,index,params):
+        res = self.session.get(url=self.url_list[0],params=params).text
+        res = self.session.post(url=self.url_list[0],params=params,data=self.data).json()
+        #print(res)
 
 
 class Submit_ClassSelection:
@@ -43,6 +41,9 @@ class Submit_ClassSelection:
         #print(res)
         self.log.main("INFO",res)
 
+class Main:
+    def __init__(self):
+        pass
+
 if __name__ == '__main__':
-    Select_Class(None).Get_Source()
-    Select_Class(None).main()
+    print(Select_Class(None).curse_order)

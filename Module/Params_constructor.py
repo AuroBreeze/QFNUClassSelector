@@ -38,8 +38,8 @@ class ParamsConstructor:
             
             
             # 转为URL编码格式
-            course = str(URL_encode.Encode(course).Get_encode())
-            teachers = [str(URL_encode.Encode(teacher).Get_encode()) for teacher in teachers]#转为URL编码格式
+            #course = str(URL_encode.Encode(course).Get_encode())
+            #teachers = [str(URL_encode.Encode(teacher).Get_encode()) for teacher in teachers]#转为URL编码格式
             
             #检测
             self.log.main("DEBUG","转为URL编码格式后的数据，请查看下列数据")
@@ -88,5 +88,9 @@ class ParamsConstructor:
             exit()
 
 # 实例化ParamsConstructor并生成params.json文件
-constructor = ParamsConstructor()
-constructor.write_to_json()
+# constructor = ParamsConstructor()
+# constructor.write_to_json()
+
+if __name__ == '__main__':
+    constructor = ParamsConstructor()
+    constructor.write_to_json()

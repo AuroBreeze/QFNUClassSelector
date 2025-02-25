@@ -27,11 +27,10 @@ class Fixed_Data:
             "mDataProp_11": "czOper"
         }
 
-        self.config = None
         
         try:
-            with open("./config.json","r",encoding="utf-8") as f:
-                self.config = json.load(f)
+            with open("./params.json","r",encoding="utf-8") as f:
+                self.config_json = json.load(f)
         except:
             self.log.main("ERROR", "Fixed_Data: 读取配置文件(params.json)失败")
             self.log.main("ERROR","程序已退出")
@@ -43,7 +42,7 @@ class Fixed_Data:
         elif self.output == "Data":
             return self.data_str
         elif self.output == "Params":
-            return self.params_json
+            return self.config_json
         else:
             self.log.main("ERROR", "Return_Data: 无效的请求参数")
 

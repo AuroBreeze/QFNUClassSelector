@@ -7,7 +7,7 @@ class Encode:
         "%E4%B9%92%E4%B9%93%E7%90%83"
         try:
             if text == "":
-                self.log.main("WARN", "URL_encode.py 没有输入需要编码的文本,请重新输入")
+                self.log.main("DEBUG", "URL_encode.py 没有输入需要编码的文本,请重新输入")
             # 需要编码的字符串
             self.text = f"{text}"
             # URL 编码

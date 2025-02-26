@@ -39,33 +39,47 @@ class Load_Source:  # 载入所有必须的资源
 
 
 class Submit_ClassSelection:
-    def __init__(self, session, jx0404id="202420252011613", kcid="530128"):
+    def __init__(self,session,jx0404id,kcid):
         self.session = session
         self.log = Logging.Log("Submit_ClassSelection")
         # 获取时间戳
         self.timestamp = int(round(time.time() * 1000))
         # print(timestamp)
-        res = session.get(
-            url=f"http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/iscx?jx0404id={str(jx0404id)}&kcid={str(kcid)}"
-        ).text
-        # print(res)
-        res = session.get(
-            url=f"http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/knjxkOper?kcid={str(kcid)}&cfbs=null&jx0404id={str(jx0404id)}&xkzy=&trjf=&_="
-            + str(self.timestamp)
-        ).text
-        # print(res)
-        self.log.main("INFO", res)
 
+        self.jx0404id = jx0404id
+        self.kcid = kcid
+
+    def main(self):
+
+        res = self.session.get(
+            url=f"http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/iscx?jx0404id={str(self.jx0404id)}&kcid={str(self.kcid)}"
+        ).text
+        # print(res)
+        res = self.session.get(
+            url=f"http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/knjxkOper?kcid={str(self.kcid)}&cfbs=null&jx0404id={str(self.jx0404id)}&xkzy=&trjf=&_="
+                + str(self.timestamp)
+        ).text
+        try:
+            if res["message"] == "选课成功":
+                self.log.main("INFO", "选课成功")
+                return True
+        except:
+            self.log.main("DEBUG", f"Post返回json数据：{res}")
+            return False
 
 class Select_Class:
     def __init__(self, session):
         self.session = session  # 继承session数据
         self.log = Logging.Log("Select_Class")
+
         self.Order_list = Load_Source().Return_Data("Order")  # 载入选课顺序列表
         self.url_list = Load_Source().Return_Data("URL")  # 载入默认选课列表
         self.course_name = Load_Source().Return_Data("Name")  # 载入课程名称列表
         self.params = Load_Source().Return_Data("Params")  # 载入默认请求参数
         self.data = Load_Source().Return_Data("Data")  # 载入默认请求数据
+
+        self.jx0404id = None
+        self.jx02id_get = None
 
     def Get_Json_data(self, index, params, data):  # 发送请求包，获取课程数据
         res = self.session.get(url=self.url_list[index], params=params).text
@@ -75,29 +89,36 @@ class Select_Class:
         return json_data
 
     def run(self):
-        for i in range(len(self.Order)):
-            if self.Order[i] == []:
+        for i in range(len(self.Order_list)):
+            if self.Order_list[i] == []:
                 self.default_order()  # 默认选课顺序
                 continue
-            for j in range(len(self.Order[i])):
-                if self.Order[i][j] == "":
+            for j in range(len(self.Order_list[i])):
+                if self.Order_list[i][j] == "":
                     self.default_order()
                     continue
-                self.plan_order(self.Order[i][j])  # 已设置的选课顺序
+                self.plan_order(self.Order_list[i][j])  # 已设置的选课顺序
 
     def default_order(self):
+
         for index in range(len(self.url_list)):
             try:
                 for name in self.course_name:
+                    judge_submit = False
                     for name_params in self.params[name]:
                         json_data =self.Get_Json_data(
-                            index=index, params=self.params, data=self.data
+                            index=index, params=name_params, data=self.data
                         )
                         judge = self.Json_Process(json_data)
                         
                         if judge:
-                            Submit_ClassSelection(self.session)
-                        
+                            judge_submit = Submit_ClassSelection(self.session,self.jx0404id,self.jx02id_get)
+                            if judge_submit:
+                                self.log.main("INFO", f"{name}选课成功")
+                        else:
+                            pass
+
+
             except Exception as e:
                 self.log.main("ERROR", f"{self.url_list[index]}请求失败")
                 self.log.main("ERROR", f"失败原因：{e}")
@@ -109,6 +130,15 @@ class Select_Class:
         pass
 
     def Json_Process(self,json_data) -> bool:
-        pass
+        try:
+            Data = json_data["aaData"]
+            self.jx0404id_get = str(Data["jx0404id"])
+            self.jx02id_get = str(Data["jx02id"])
+            return True
+        except:
+            self.log.main("DEBUG","未查询到所选课程")
+            self.log.main("DEBUG",f"json数据:{json_data}")
+            return False
 if __name__ == "__main__":
-    Select_Class().run()
+    #Select_Class().run()
+    pass

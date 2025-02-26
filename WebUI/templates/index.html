@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QFNU Class Selector</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入自定义 CSS -->
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-control {
+            font-size: 0.9rem;
+        }
+        .form-text {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <main id="app" class="container mt-5">
+        <header>
+            <h1 class="text-center mb-4">QFNU Class Selector</h1>
+        </header>
+        <form action="/update" method="post">
+            <section>
+                <h2 class="section-title">服务器配置</h2>
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <textarea class="form-control" id="username" name="username" rows="1" required>{{ config.Login.username | join(',') }}</textarea>
+                    <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <textarea class="form-control" id="password" name="password" rows="1" required>{{ config.Login.password | join(',') }}</textarea>
+                    <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">模式配置</h2>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="multiple" name="multiple" value="true" {% if config.Plan.Multiple %}checked{% endif %}>
+                        <label class="form-check-label" for="multiple">多选</label>
+                    </div>
+                    <small class="form-text">勾选以启用多选功能。</small>
+                </div>
+                <div class="form-group">
+                    <label for="multiple_judge">多选判断</label>
+                    <textarea class="form-control" id="multiple_judge" name="multiple_judge" rows="1">{{ config.Plan.Multiple_Judge | join(',') }}</textarea>
+                    <small class="form-text">请输入布尔值，多个布尔值用逗号分隔。</small>
+                </div>
+                <div class="form-group">
+                    <label for="multiple_account">多账号</label>
+                    <textarea class="form-control" id="multiple_account" name="multiple_account" rows="3">{{ config.Plan.Multiple_account | join(';') }}</textarea>
+                    <small class="form-text">请输入每个课程的账号名称，账号名称用逗号分隔，多个课程用分号分隔。</small>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">课程计划</h2>
+                <div id="course-container">
+                    {% for course in config.Plan.Course_name %}
+                    <div class="card mb-3 course-card">
+                        <div class="card-body">
+                            <h5 class="card-title">课程 {{ loop.index }}</h5>
+                            <div class="form-group">
+                                <label for="course_name_{{ loop.index }}">课程名称</label>
+                                <input type="text" class="form-control" id="course_name_{{ loop.index }}" name="course_name_{{ loop.index }}" value="{{ course }}" required>
+                                <small class="form-text">请输入课程名称。</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="teachers_name_{{ loop.index }}">教师名称</label>
+                                <input type="text" class="form-control" id="teachers_name_{{ loop.index }}" name="teachers_name_{{ loop.index }}" value="{{ config.Plan.Teachers_name[loop.index0] | join(',') }}">
+                                <small class="form-text">请输入教师名称，多个教师名称用逗号分隔。</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="time_period_{{ loop.index }}">时间段</label>
+                                <input type="text" class="form-control" id="time_period_{{ loop.index }}" name="time_period_{{ loop.index }}" value="{{ config.Plan.Time_period[loop.index0] | join(',') }}">
+                                <small class="form-text">请输入时间段，时间段用逗号分隔。</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="week_day_{{ loop.index }}">星期</label>
+                                <input type="text" class="form-control" id="week_day_{{ loop.index }}" name="week_day_{{ loop.index }}" value="{{ config.Plan.Week_day[loop.index0] | join(',') }}">
+                                <small class="form-text">请输入星期，星期用逗号分隔。</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="course_order_{{ loop.index }}">课程顺序</label>
+                                <input type="text" class="form-control" id="course_order_{{ loop.index }}" name="course_order_{{ loop.index }}" value="{{ config.Plan.Course_order[loop.index0] | join(',') }}">
+                                <small class="form-text">请输入课程顺序，顺序用逗号分隔。</small>
+                            </div>
+                            <button type="button" class="btn btn-danger remove-course">Remove Course</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-success" id="add-course">Add Course</button>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sfym" name="sfym" value="true" {% if config.Plan.sfym %}checked{% endif %}>
+                        <label class="form-check-label" for="sfym">过滤已满课程</label>
+                    </div>
+                    <small class="form-text">勾选以过滤已满课程。</small>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sfct" name="sfct" value="true" {% if config.Plan.sfct %}checked{% endif %}>
+                        <label class="form-check-label" for="sfct">过滤冲突课程</label>
+                    </div>
+                    <small class="form-text">勾选以过滤冲突课程。</small>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sfxx" name="sfxx" value="true" {% if config.Plan.sfxx %}checked{% endif %}>
+                        <label class="form-check-label" for="sfxx">过滤限选课程</label>
+                    </div>
+                    <small class="form-text">勾选以过滤限选课程。</small>
+                </div>
+                <div class="form-group">
+                    <label for="skxq_xx0103">校区代码</label>
+                    <input type="text" class="form-control" id="skxq_xx0103" name="skxq_xx0103" value="{{ config.Plan.skxq_xx0103 }}">
+                    <small class="form-text">请输入校区代码（1:曲阜, 2:日照, 68FD936EFC564F6E88EC852F9E8019C2:曲阜西校区）。</small>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">定时任务</h2>
+                <div class="form-group">
+                    <label for="start_time">开始时间</label>
+                    <input type="text" class="form-control" id="start_time" name="start_time" value="{{ config.Time.Start_time }}" required>
+                    <small class="form-text">请输入开始时间，格式为HH:MM:SS。</small>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">结束时间</label>
+                    <input type="text" class="form-control" id="end_time" name="end_time" value="{{ config.Time.End_time }}" required>
+                    <small class="form-text">请输入结束时间，格式为HH:MM:SS。</small>
+                </div>
+                <div class="form-group">
+                    <label for="interval">间隔时间</label>
+                    <input type="text" class="form-control" id="interval" name="interval" value="{{ config.Time.Interval }}" required>
+                    <small class="form-text">请输入间隔时间，单位为秒。</small>
+                </div>
+                <div class="form-group">
+                    <label for="retry_time">重试时间</label>
+                    <input type="text" class="form-control" id="retry_time" name="retry_time" value="{{ config.Time.retry_time }}" required>
+                    <small class="form-text">请输入重试时间，单位为毫秒。</small>
+                </div>
+            </section>
+
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </main>
+
+    <!-- 引入 Bootstrap JS 和依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addCourseButton = document.getElementById('add-course');
+            const courseContainer = document.getElementById('course-container');
+
+            let courseCount = {{ config.Plan.Course_name | length }};
+
+            addCourseButton.addEventListener('click', function() {
+                courseCount++;
+                const newCourseCard = document.createElement('div');
+                newCourseCard.className = 'card mb-3 course-card';
+                newCourseCard.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">课程 ${courseCount}</h5>
+                        <div class="form-group">
+                            <label for="course_name_${courseCount}">课程名称</label>
+                            <input type="text" class="form-control" id="course_name_${courseCount}" name="course_name_${courseCount}" required>
+                            <small class="form-text">请输入课程名称。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="teachers_name_${courseCount}">教师名称</label>
+                            <input type="text" class="form-control" id="teachers_name_${courseCount}" name="teachers_name_${courseCount}">
+                            <small class="form-text">请输入教师名称，多个教师名称用逗号分隔。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_period_${courseCount}">时间段</label>
+                            <input type="text" class="form-control" id="time_period_${courseCount}" name="time_period_${courseCount}">
+                            <small class="form-text">请输入时间段，时间段用逗号分隔。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="week_day_${courseCount}">星期</label>
+                            <input type="text" class="form-control" id="week_day_${courseCount}" name="week_day_${courseCount}">
+                            <small class="form-text">请输入星期，星期用逗号分隔。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="course_order_${courseCount}">课程顺序</label>
+                            <input type="text" class="form-control" id="course_order_${courseCount}" name="course_order_${courseCount}">
+                            <small class="form-text">请输入课程顺序，顺序用逗号分隔。</small>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-course">Remove Course</button>
+                    </div>
+                `;
+                courseContainer.appendChild(newCourseCard);
+            });
+
+            courseContainer.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('remove-course')) {
+                    event.target.closest('.course-card').remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

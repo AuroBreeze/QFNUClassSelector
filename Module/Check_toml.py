@@ -188,7 +188,7 @@ class main:
             self.bool = False
 
         # 检查Course_order中的每个子列表中的元素是否合法
-        valid_course_orders = ['0', '1', '2', '3', '4', '5', '6', '']
+        valid_course_orders = ['0', '1', '2', '3', '4', '5' , '']
         for order_list in course_order:
             if not isinstance(order_list, list):
                 self.log.main("ERROR", 'config.toml文件中Course_order中的每个子列表必须为列表类型')

@@ -73,6 +73,8 @@ class Select_Class:
 
         self.Order_list = Load_Source().Return_Data("Order")  # 载入选课顺序列表
         self.url_list = Load_Source().Return_Data("URL")  # 载入默认选课列表
+        self.name_url = ["选修选课","本学期计划选课","专业内跨年级选课","计划外选课","公选课选课","辅修选课"]
+
         self.course_name = Load_Source().Return_Data("Name")  # 载入课程名称列表
         self.params = Load_Source().Return_Data("Params")  # 载入默认请求参数
         self.data = Load_Source().Return_Data("Data")  # 载入默认请求数据
@@ -96,17 +98,18 @@ class Select_Class:
 
     def default_order(self):
         for name in self.course_name:
-            try:
-                for index in range(len(self.url_list)):
+            for index in range(len(self.url_list)):
+                try:
                     judge_submit = False
                     for name_params in self.params[name]:
-                        json_data =self.Get_Json_data(
-                            index=index, params=name_params, data=self.data
-                        )
+                        json_data = self.Get_Json_data(
+                                index=index, params=name_params, data=self.data
+                            )
                         judge = self.Json_Process(json_data)
 
                         if judge:
-                            judge_submit = Submit_ClassSelection(self.session,self.jx0404id,self.jx02id_get).main()
+                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
+                                                                     self.jx02id_get).main()
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功")
                                 break
@@ -115,11 +118,13 @@ class Select_Class:
                     if judge_submit:
                         break
                     else:
-                        self.log.main("WARN","⚠️ 选课失败")
-            except Exception as e:
-                self.log.main("ERROR", f"❌ {self.url_list[index]}请求失败")
-                self.log.main("ERROR", f"❌ 失败原因：{e}")
+                        self.log.main("WARN", "⚠️ 选课失败")
+
+                except Exception as e:
+                    self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
+                    self.log.main("ERROR", f"❌ 失败原因：{e}")
         self.url_list = Load_Source().Return_Data("URL")  # 重新载入选课列表
+
 
     def plan_order(self, Order_list):
         for index in Order_list:
@@ -150,7 +155,7 @@ class Select_Class:
                     else:
                         self.log.main("WARN", "⚠️ 选课失败")
             except Exception as e:
-                self.log.main("ERROR", f"❌ {self.url_list[index]}请求失败")
+                self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
                 self.log.main("ERROR", f"❌ 失败原因：{e}")
 
     def Json_Process(self,json_data) -> bool:

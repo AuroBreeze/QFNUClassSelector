@@ -7,17 +7,15 @@ class QFNUClassSelector:
         pass
     def run(self):
         time_start = time.time()
-
         Welcome.main()
-        # Check_toml.main().Return_bool()
         self.log.main("INFO", "QFNUClassSelector started")
 
         if Timer.Timer().run() == False:
-            self.log.main("INFO", "Time is up, exiting...")
+            self.log.main("INFO", "程序正在退出")
             time_end = time.time()
-            self.log.main("INFO", f"Time used: {time_end - time_start}s")
+            self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
             return
-        #session = login.mainss(0)
+
         index = 0
         session  = Session_inherit.Session_Inherit(index).Return_Session()
 

@@ -5,3 +5,4 @@ toml
 pillow
 lxml
 colorlog
+flask

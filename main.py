@@ -22,7 +22,7 @@ class QFNUClassSelector:
         Select_class.Select_Class(session).run()
 
         time_end = time.time()
-        self.log.main("INFO", f"Time used: {time_end - time_start}s")
+        self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
     def MultiAccount(self):
         pass
 

@@ -118,7 +118,7 @@ class Select_Class:
                     if judge_submit:
                         break
                     else:
-                        self.log.main("WARN", "⚠️ 选课失败")
+                        self.log.main("WARN", f"⚠️ {name}选课失败")
 
                 except Exception as e:
                     self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
@@ -153,7 +153,7 @@ class Select_Class:
                     if judge_submit:
                         break
                     else:
-                        self.log.main("WARN", "⚠️ 选课失败")
+                        self.log.main("WARN", f"⚠️ {name}选课失败")
             except Exception as e:
                 self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
                 self.log.main("ERROR", f"❌ 失败原因：{e}")

@@ -11,17 +11,9 @@ class Session_Inherit:
         self.log= Logging.Log("Inherit_Session")
         self.index = index  # 保存当前登录的序号
         self.config = Timer.Timer().Return_config()
-        self.url_list = []  # 保存所有选课的url
-        """
-        0:# 选课学分情况 http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xsxk_tzsm
-        1:# 必修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInBxxk
-        2:# 选修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInXxxk
-        3:# 本学期计划选课.json http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInBxqjhxk
-        4:# 专业内跨年级选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInKnjxk
-        5:# 计划外选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInFawxk
-        6:# 公选课选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInGgxxkxk
-        7:# 辅修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInFxzyxk
-        """
+
+        self.url_list = []
+
         self.Progressively_Inherit()
     def Progressively_Inherit(self):  # 继承session，session按序访问保持会话JSESSIONID
         count = 0
@@ -31,6 +23,8 @@ class Session_Inherit:
         """
         while True:
             try:
+                self.log.main("INFO", "正在尝试继承session......")
+
                 url_1 = "http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xklc_list"
                 response = self.session.get(url=url_1).text
                 soup = BeautifulSoup(response, "lxml")

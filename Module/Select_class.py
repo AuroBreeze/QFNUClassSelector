@@ -6,7 +6,6 @@ import toml
 class Load_Source:  # 载入所有必须的资源
     def __init__(self):
         self.log = Logging.Log("Load_Source")
-        # self.url = "http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkGgxxkxk"
 
         self.Get_Course_order()
         self.Get_Source()
@@ -96,18 +95,18 @@ class Select_Class:
             self.plan_order(self.Order_list[i])  # 已设置的选课顺序
 
     def default_order(self):
-        for index in range(len(self.url_list)):
+        for name in self.course_name:
             try:
-                for name in self.course_name:
+                for index in range(len(self.url_list)):
                     judge_submit = False
                     for name_params in self.params[name]:
                         json_data =self.Get_Json_data(
                             index=index, params=name_params, data=self.data
                         )
                         judge = self.Json_Process(json_data)
-                        
+
                         if judge:
-                            judge_submit = Submit_ClassSelection(self.session,self.jx0404id,self.jx02id_get)
+                            judge_submit = Submit_ClassSelection(self.session,self.jx0404id,self.jx02id_get).main()
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功")
                                 break
@@ -128,7 +127,8 @@ class Select_Class:
                 self.default_order()
                 continue
             else:
-                self.url_list.pop(index)
+                index = int(index)
+                self.url_list.pop(int(index))
             try:
                 for name in self.course_name:
                     judge_submit = False
@@ -139,7 +139,7 @@ class Select_Class:
                         judge = self.Json_Process(json_data)
 
                         if judge:
-                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id, self.jx02id_get)
+                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id, self.jx02id_get).main()
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功")
                                 break
@@ -156,13 +156,13 @@ class Select_Class:
     def Json_Process(self,json_data) -> bool:
         try:
             Data = json_data["aaData"][0]
-            self.jx0404id_get = str(Data["jx0404id"])
-            self.jx02id_get = str(Data["jx02id"])
+            self.jx0404id = str(Data["jx0404id"])
+            self.jx02id = str(Data["jx02id"])
             return True
         except:
             self.log.main("DEBUG","🔍 未查询到所选课程")
             self.log.main("DEBUG",f"🔍 json数据:{json_data}")
             return False
 if __name__ == "__main__":
-    #Select_Class().run()
+    Select_Class(None)
     pass

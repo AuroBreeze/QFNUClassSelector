@@ -61,10 +61,10 @@ class Submit_ClassSelection:
         ).text
         try:
             if res["message"] == "选课成功":
-                self.log.main("INFO", "选课成功")
+                self.log.main("INFO", "✅ 选课成功")
                 return True
         except:
-            self.log.main("DEBUG", f"Post返回json数据：{res}")
+            self.log.main("DEBUG", f"🔍 Post返回json数据：{res}")
             return False
 
 class Select_Class:
@@ -114,14 +114,18 @@ class Select_Class:
                         if judge:
                             judge_submit = Submit_ClassSelection(self.session,self.jx0404id,self.jx02id_get)
                             if judge_submit:
-                                self.log.main("INFO", f"{name}选课成功")
+                                self.log.main("INFO", f"✅ {name}选课成功")
+                                break
                         else:
                             pass
-
+                    if judge_submit:
+                        break
+                    else:
+                        self.log.main("WARN","⚠️ 选课失败")
 
             except Exception as e:
-                self.log.main("ERROR", f"{self.url_list[index]}请求失败")
-                self.log.main("ERROR", f"失败原因：{e}")
+                self.log.main("ERROR", f"❌ {self.url_list[index]}请求失败")
+                self.log.main("ERROR", f"❌ 失败原因：{e}")
 
             pass
         pass
@@ -136,8 +140,8 @@ class Select_Class:
             self.jx02id_get = str(Data["jx02id"])
             return True
         except:
-            self.log.main("DEBUG","未查询到所选课程")
-            self.log.main("DEBUG",f"json数据:{json_data}")
+            self.log.main("DEBUG","🔍 未查询到所选课程")
+            self.log.main("DEBUG",f"🔍 json数据:{json_data}")
             return False
 if __name__ == "__main__":
     #Select_Class().run()

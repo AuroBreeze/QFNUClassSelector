@@ -1,4 +1,4 @@
-from Module import Logging,Welcome,Session_inherit,Select_class,Check_toml,Timer
+from Module import Logging,Welcome,Session_inherit,Select_class,Timer
 import time
 
 class QFNUClassSelector:
@@ -21,10 +21,7 @@ class QFNUClassSelector:
         index = 0
         session  = Session_inherit.Session_Inherit(index).Return_Session()
 
-
-        #Select_class.Select_Class(session,Data.Fixed_Data,kcxx=f"{URL_encode.Encode("乒乓球")}")
-
-        #Submit_class.Submit_ClassSelection(session,jx0404id="202420252011613",kcid="530128")
+        Select_class.Select_Class(session).run()
 
         time_end = time.time()
         self.log.main("INFO", f"Time used: {time_end - time_start}s")

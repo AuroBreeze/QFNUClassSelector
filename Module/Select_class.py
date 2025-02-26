@@ -93,14 +93,9 @@ class Select_Class:
             if self.Order_list[i] == []:
                 self.default_order()  # 默认选课顺序
                 continue
-            for j in range(len(self.Order_list[i])):
-                if self.Order_list[i][j] == "":
-                    self.default_order()
-                    continue
-                self.plan_order(self.Order_list[i][j])  # 已设置的选课顺序
+            self.plan_order(self.Order_list[i])  # 已设置的选课顺序
 
     def default_order(self):
-
         for index in range(len(self.url_list)):
             try:
                 for name in self.course_name:
@@ -122,20 +117,45 @@ class Select_Class:
                         break
                     else:
                         self.log.main("WARN","⚠️ 选课失败")
+            except Exception as e:
+                self.log.main("ERROR", f"❌ {self.url_list[index]}请求失败")
+                self.log.main("ERROR", f"❌ 失败原因：{e}")
+        self.url_list = Load_Source().Return_Data("URL")  # 重新载入选课列表
 
+    def plan_order(self, Order_list):
+        for index in Order_list:
+            if index == "":
+                self.default_order()
+                continue
+            else:
+                self.url_list.pop(index)
+            try:
+                for name in self.course_name:
+                    judge_submit = False
+                    for name_params in self.params[name]:
+                        json_data = self.Get_Json_data(
+                            index=index, params=name_params, data=self.data
+                        )
+                        judge = self.Json_Process(json_data)
+
+                        if judge:
+                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id, self.jx02id_get)
+                            if judge_submit:
+                                self.log.main("INFO", f"✅ {name}选课成功")
+                                break
+                        else:
+                            pass
+                    if judge_submit:
+                        break
+                    else:
+                        self.log.main("WARN", "⚠️ 选课失败")
             except Exception as e:
                 self.log.main("ERROR", f"❌ {self.url_list[index]}请求失败")
                 self.log.main("ERROR", f"❌ 失败原因：{e}")
 
-            pass
-        pass
-
-    def plan_order(self, index):
-        pass
-
     def Json_Process(self,json_data) -> bool:
         try:
-            Data = json_data["aaData"]
+            Data = json_data["aaData"][0]
             self.jx0404id_get = str(Data["jx0404id"])
             self.jx02id_get = str(Data["jx02id"])
             return True

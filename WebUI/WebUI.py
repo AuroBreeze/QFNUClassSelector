@@ -17,8 +17,8 @@ def index():
 @app.route('/update', methods=['POST'])
 def update():
     # 获取表单数据
-    username = request.form.get('username').split(',')
-    password = request.form.get('password').split(',')
+    username = request.form.getlist('username[]')
+    password = request.form.getlist('password[]')
     course_name = []
     teachers_name = []
     time_period = []

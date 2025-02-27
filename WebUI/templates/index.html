@@ -27,25 +27,30 @@
         </header>
         <form action="/update" method="post">
             <section>
-                <h2 class="section-title">服务器配置</h2>
-                <div class="form-group">
-                    <label for="username">用户名</label>
-                    <textarea class="form-control" id="username" name="username" rows="1" required>{{ config.Login.username | join(',') }}</textarea>
-                    <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
+                <h2 class="section-title">登录配置</h2>
+                <div id="login-config-container">
+                    {% for group in config.Login.username %}
+                    <div class="form-group">
+                        <label for="username_{{ loop.index }}">用户名</label>
+                        <textarea class="form-control" id="username_{{ loop.index }}" name="username[{{ loop.index0 }}]" rows="1" required>{{ config.Login.username[loop.index0] }}</textarea>
+                        <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_{{ loop.index }}">密码</label>
+                        <textarea class="form-control" id="password_{{ loop.index }}" name="password[{{ loop.index0 }}]" rows="1" required>{{ config.Login.password[loop.index0] }}</textarea>
+                        <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="form-group">
-                    <label for="password">密码</label>
-                    <textarea class="form-control" id="password" name="password" rows="1" required>{{ config.Login.password | join(',') }}</textarea>
-                    <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
-                </div>
+                <button type="button" class="btn btn-primary" id="add-login-config">+</button>
             </section>
 
             <section>
-                <h2 class="section-title">模式配置</h2>
+                <h2 class="section-title">多账号模式配置</h2>
                 <div class="form-group">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="multiple" name="multiple" value="true" {% if config.Plan.Multiple %}checked{% endif %}>
-                        <label class="form-check-label" for="multiple">多选</label>
+                        <label class="form-check-label" for="multiple">开启</label>
                     </div>
                     <small class="form-text">勾选以启用多选功能。</small>
                 </div>
@@ -206,6 +211,36 @@
             courseContainer.addEventListener('click', function(event) {
                 if (event.target && event.target.classList.contains('remove-course')) {
                     event.target.closest('.course-card').remove();
+                }
+            });
+
+            const addLoginConfigButton = document.getElementById('add-login-config');
+            const loginConfigContainer = document.getElementById('login-config-container');
+
+            let loginConfigCount = {{ config.Login.username | length }};
+
+            addLoginConfigButton.addEventListener('click', function() {
+                loginConfigCount++;
+                const newLoginConfig = document.createElement('div');
+                newLoginConfig.innerHTML = `
+                    <div class="form-group">
+                        <label for="username_${loginConfigCount}">用户名</label>
+                        <textarea class="form-control" id="username_${loginConfigCount}" name="username[${loginConfigCount - 1}]" rows="1" required></textarea>
+                        <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_${loginConfigCount}">密码</label>
+                        <textarea class="form-control" id="password_${loginConfigCount}" name="password[${loginConfigCount - 1}]" rows="1" required></textarea>
+                        <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-login-config">-</button>
+                `;
+                loginConfigContainer.appendChild(newLoginConfig);
+            });
+
+            loginConfigContainer.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('remove-login-config')) {
+                    event.target.parentElement.remove();
                 }
             });
         });

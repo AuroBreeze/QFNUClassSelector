@@ -71,7 +71,25 @@ class Select_Class:
         self.session = session  # 继承session数据
         self.log = Logging.Log("Select_Class")
 
-        self.Order_list = Load_Source().Return_Data("Order")  # 载入选课顺序列表
+        self.Order_list = Load_Source().Return_Data("Order")  # 载入设置的选课顺序列表
+        self.Order_list_success ={
+            "0": [],
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+            } #增加搜索到的课程所在的URL
+        
+        self.Order_list_fail = {
+            "0": [],
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+            } #增加搜索失败的课程所在的URL
+        
         self.url_list = Load_Source().Return_Data("URL")  # 载入默认选课列表
         self.name_url = ["选修选课","本学期计划选课","专业内跨年级选课","计划外选课","公选课选课","辅修选课"]
 
@@ -112,6 +130,7 @@ class Select_Class:
                                                                      self.jx02id_get).main()
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功")
+                                self.Order_list_success[str(index)].append(name)
                                 break
                         else:
                             pass
@@ -147,6 +166,7 @@ class Select_Class:
                             judge_submit = Submit_ClassSelection(self.session, self.jx0404id, self.jx02id_get).main()
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功")
+                                self.Order_list_success[str(index)].append(name)
                                 break
                         else:
                             pass

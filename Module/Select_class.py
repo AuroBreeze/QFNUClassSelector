@@ -2,7 +2,6 @@ from Module import Logging, Data
 import time
 import toml
 
-
 class Load_Source:  # 载入所有必须的资源
     def __init__(self):
         self.log = Logging.Log("Load_Source")
@@ -138,6 +137,7 @@ class Select_Class:
                         break
                     else:
                         self.log.main("WARN", f"⚠️ {name}选课失败")
+                        self.Order_list_fail[str(index)].append(name)
 
                 except Exception as e:
                     self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
@@ -174,6 +174,7 @@ class Select_Class:
                         break
                     else:
                         self.log.main("WARN", f"⚠️ {name}选课失败")
+                        self.Order_list_fail[str(index)].append(name)
             except Exception as e:
                 self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
                 self.log.main("ERROR", f"❌ 失败原因：{e}")

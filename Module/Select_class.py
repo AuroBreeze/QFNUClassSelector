@@ -121,7 +121,7 @@ class Select_Class:
         else:#存在失败的课程
             pass
 
-        self.Save_Failed_Courses_To_Toml()
+        self.Save_Failed_Courses_To_Json()
 
     def default_order(self):
         for name in self.course_name:
@@ -209,26 +209,29 @@ class Select_Class:
     def Return_Data(self): # 返回课程名称和失败的课程名称,以便后续蹲课使用
         return self.course_name,self.Order_list_fail
 
-    def Save_Failed_Courses_To_Toml(self):
-        """将未选课成功的结果保存到toml文件中"""
+    def Save_Failed_Courses_To_Json(self):
+        """将未选课成功的结果保存到json文件中"""
         failed_courses = {}
         for index, courses in self.Order_list_fail.items():
             if courses:
                 # 对课程列表进行去重
-                failed_courses[self.name_url[int(index)]] = list(set(courses))
+                failed_courses[str(index)] = list(set(courses))
         
         try:
-            with open("./failed_courses.toml", "w", encoding="utf-8") as f:
-                toml.dump(failed_courses, f)
-            self.log.main("INFO", "未选课成功的课程已保存到failed_courses.toml文件中")
+            with open("./failed_courses.json", "w", encoding="utf-8") as f:
+                import json
+                json.dump(failed_courses, f, ensure_ascii=False, indent=4)
+            self.log.main("INFO", "未选课成功的课程已保存到failed_courses.json文件中")
         except Exception as e:
             self.log.main("ERROR", f"保存未选课成功的课程到文件时出错: {e}")
+
     def Check_failed_courses(self):
         try:
-            if  not os.path.exists("./failed_courses.toml"):
+            if  not os.path.exists("./failed_courses.json"):
                 return True
-            with open("./failed_courses.toml", "r", encoding="utf-8") as f:
-                failed_courses = toml.load(f)
+            with open("./failed_courses.json", "r", encoding="utf-8") as f:
+                import json
+                failed_courses = json.load(f)
                 return failed_courses
         except Exception as e:
             self.log.main("ERROR", f"读取未选课成功的课程时出错: {e}")

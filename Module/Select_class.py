@@ -2,7 +2,7 @@ from Module import Logging, Data
 import time
 import toml
 import os
-
+import json
 class Load_Source:  # 载入所有必须的资源
     def __init__(self):
         self.log = Logging.Log("Load_Source")
@@ -119,7 +119,13 @@ class Select_Class:
                     continue
                 self.plan_order(self.Order_list[i])  # 已设置的选课顺序
         else:#存在失败的课程
-            pass
+            try:
+                with open("./failed_courses.json","r",encoding="utf-8") as f:
+                    self.Order_list_fail = json.load(f)
+            except:
+                self.log.main("ERROR","❌ 读取失败课程列表失败，请检查failed_courses.json文件是否存在")
+
+
 
         self.Save_Failed_Courses_To_Json()
 

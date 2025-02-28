@@ -1,6 +1,7 @@
 from Module import Logging, Data
 import time
 import toml
+import os
 
 class Load_Source:  # 载入所有必须的资源
     def __init__(self):
@@ -9,11 +10,14 @@ class Load_Source:  # 载入所有必须的资源
         self.Get_Course_order()
         self.Get_Source()
 
+        self.Candidate = False
+
     def Get_Course_order(self):
         with open("./config.toml", "r", encoding="utf-8") as f:
             config = toml.load(f)
         self.curse_order = config["Plan"]["Course_order"]
         self.curse_name = config["Plan"]["Course_name"]
+        self.interval = config["Time"]["Interval"]  # 获取配置文件中的间隔时间(毫秒)
 
     def Get_Source(self):
         self.url_list = Data.Fixed_Data(output="URL").Return_Data()
@@ -107,11 +111,17 @@ class Select_Class:
         return json_data
 
     def run(self):
-        for i in range(len(self.Order_list)):
-            if self.Order_list[i] == []:
-                self.default_order()  # 默认选课顺序
-                continue
-            self.plan_order(self.Order_list[i])  # 已设置的选课顺序
+        if self.Check_failed_courses():
+            #执行正常抢课
+            for i in range(len(self.Order_list)):
+                if self.Order_list[i] == []:
+                    self.default_order()  # 默认选课顺序
+                    continue
+                self.plan_order(self.Order_list[i])  # 已设置的选课顺序
+        else:#存在失败的课程
+            pass
+
+        self.Save_Failed_Courses_To_Toml()
 
     def default_order(self):
         for name in self.course_name:
@@ -128,8 +138,9 @@ class Select_Class:
                             judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
                                                                      self.jx02id_get).main()
                             if judge_submit:
-                                self.log.main("INFO", f"✅ {name}选课成功")
+                                self.log.main("INFO", f"✅ {name}选课成功，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
                                 self.Order_list_success[str(index)].append(name)
+                                self.course_name.pop(int(index))
                                 break
                         else:
                             pass
@@ -142,6 +153,7 @@ class Select_Class:
                 except Exception as e:
                     self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
                     self.log.main("ERROR", f"❌ 失败原因：{e}")
+                    self.Order_list_fail[str(index)].append(name)
         self.url_list = Load_Source().Return_Data("URL")  # 重新载入选课列表
 
 
@@ -153,31 +165,35 @@ class Select_Class:
             else:
                 index = int(index)
                 self.url_list.pop(int(index))
-            try:
-                for name in self.course_name:
-                    judge_submit = False
-                    for name_params in self.params[name]:
-                        json_data = self.Get_Json_data(
-                            index=index, params=name_params, data=self.data
-                        )
-                        judge = self.Json_Process(json_data)
 
-                        if judge:
-                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id, self.jx02id_get).main()
-                            if judge_submit:
-                                self.log.main("INFO", f"✅ {name}选课成功")
-                                self.Order_list_success[str(index)].append(name)
-                                break
+                for name in self.course_name:
+                    try:
+                        judge_submit = False
+                        for name_params in self.params[name]:
+                            json_data = self.Get_Json_data(
+                                index=index, params=name_params, data=self.data
+                            )
+                            judge = self.Json_Process(json_data)
+
+                            if judge:
+                                judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
+                                                                     self.jx02id_get).main()
+                                if judge_submit:
+                                    self.log.main("INFO", f"✅ {name}选课成功")
+                                    self.Order_list_success[str(index)].append(name)
+                                    self.course_name.pop(int(index))
+                                    break
+                            else:
+                                pass
+                        if judge_submit:
+                            break
                         else:
-                            pass
-                    if judge_submit:
-                        break
-                    else:
-                        self.log.main("WARN", f"⚠️ {name}选课失败")
+                            self.log.main("WARN", f"⚠️ {name}选课失败")
+                            self.Order_list_fail[str(index)].append(name)
+                    except Exception as e:
+                        self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
+                        self.log.main("ERROR", f"❌ 失败原因：{e}")
                         self.Order_list_fail[str(index)].append(name)
-            except Exception as e:
-                self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
-                self.log.main("ERROR", f"❌ 失败原因：{e}")
 
     def Json_Process(self,json_data) -> bool:
         try:
@@ -189,6 +205,34 @@ class Select_Class:
             self.log.main("DEBUG","🔍 未查询到所选课程")
             self.log.main("DEBUG",f"🔍 json数据:{json_data}")
             return False
+
+    def Return_Data(self): # 返回课程名称和失败的课程名称,以便后续蹲课使用
+        return self.course_name,self.Order_list_fail
+
+    def Save_Failed_Courses_To_Toml(self):
+        """将未选课成功的结果保存到toml文件中"""
+        failed_courses = {}
+        for index, courses in self.Order_list_fail.items():
+            if courses:
+                # 对课程列表进行去重
+                failed_courses[self.name_url[int(index)]] = list(set(courses))
+        
+        try:
+            with open("./failed_courses.toml", "w", encoding="utf-8") as f:
+                toml.dump(failed_courses, f)
+            self.log.main("INFO", "未选课成功的课程已保存到failed_courses.toml文件中")
+        except Exception as e:
+            self.log.main("ERROR", f"保存未选课成功的课程到文件时出错: {e}")
+    def Check_failed_courses(self):
+        try:
+            if  not os.path.exists("./failed_courses.toml"):
+                return True
+            with open("./failed_courses.toml", "r", encoding="utf-8") as f:
+                failed_courses = toml.load(f)
+                return failed_courses
+        except Exception as e:
+            self.log.main("ERROR", f"读取未选课成功的课程时出错: {e}")
+
 if __name__ == "__main__":
     Select_Class(None)
     pass

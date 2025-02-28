@@ -42,7 +42,7 @@ class main:
                 'Multiple_account': [len(sublist) for sublist in plan.get('Multiple_account', [])]
             }
 
-        if 'Server' in self.config:
+        if 'Login' in self.config:
             server = self.config['Login']
             lengths['Login'] = {
                 'username': len(server.get('username', [])),
@@ -63,7 +63,7 @@ class main:
 
     def check_config(self):
         required_fields = {
-            'Server': ['username', 'password'],
+            'Login': ['username', 'password'],
             'Mode': ['Number', 'Select'],
             'Plan': ['Course_name', 'Multiple', 'Multiple_Judge', 'Multiple_account'],
             'Time': ['Start_time', 'End_time']

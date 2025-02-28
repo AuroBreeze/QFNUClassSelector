@@ -43,8 +43,8 @@ class main:
             }
 
         if 'Server' in self.config:
-            server = self.config['Server']
-            lengths['Server'] = {
+            server = self.config['Login']
+            lengths['Login'] = {
                 'username': len(server.get('username', [])),
                 'password': len(server.get('password', []))
             }
@@ -82,8 +82,8 @@ class main:
 
         # 新增对username和password长度的检测及对username和password是否为空或全空格的检测
         if 'Server' in self.config:
-            username = self.config['Server'].get('username', '')
-            password = self.config['Server'].get('password', '')
+            username = self.config['Login'].get('username', '')
+            password = self.config['Login'].get('password', '')
             if len(username) != len(password):
                 self.log.main("ERROR", 'config.toml文件中username和password的长度必须一致')
                 self.bool = False

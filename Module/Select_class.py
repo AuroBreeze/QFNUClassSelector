@@ -111,24 +111,27 @@ class Select_Class:
                     continue
                 self.plan_order(self.Order_list[i])  # 已设置的选课顺序
             self.Save_Failed_Courses_To_Json()
-        elif self.Check_failed_courses()==False:
-            self.log.main("INFO","✅ 全部选课成功")
-            self.log.main("INFO","正在退出程序")
-            exit()
         else:#存在失败的课程
-                self.failed_order(self.Order_list_fail)
+            self.failed_order(self.Order_list_fail)
 
     def failed_order(self,config):#候选选课
         while True:
             try:
                 with open("./failed_courses.json","r",encoding="utf-8") as f:
-                    self.Order_list_fail = json.load(f)
+                    self.Order_fail = json.load(f)
+
+                judge_json=False
+                for index,value in self.Order_fail.items():
+                    if value!=[]:
+                        judge_json=True
+                if judge_json==False:
+                    self.log.main("INFO", "✅全部课程选择成功")
+                    break
+
             except:
                 self.log.main("ERROR","❌ 读取失败课程列表失败，请检查failed_courses.json文件是否存在")
-
-
-            self.Order_list_fail = {"0": [], "1": [], "2": [], "3": [], "4": [], "5": []}  #清空选课失败的课程，准备重新写入
-            for index, courses in config.items():
+            self.Order_list_fail = {"0": [], "1": [], "2": [], "3": [], "4": [], "5": []}  # 清空选课失败的课程，准备重新写入
+            for index, courses in self.Order_fail.items():
                 index = int(index)
                 for name in courses:
                     try:
@@ -270,14 +273,17 @@ class Select_Class:
 
     def Check_failed_courses(self):
         try:
+            judge_success = True
             if  not os.path.exists("./failed_courses.json"):
                 return True
             with open("./failed_courses.json", "r", encoding="utf-8") as f:
                 import json
                 failed_courses = json.load(f)
                 for index, courses in failed_courses.items():
-                    if(courses==False):
-                        return False
+                    if(courses==[]):
+                        judge_success = False
+                if judge_success==False:
+                    return
                 return failed_courses
         except Exception as e:
             self.log.main("ERROR", f"读取未选课成功的课程时出错: {e}")

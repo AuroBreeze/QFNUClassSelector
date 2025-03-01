@@ -5,7 +5,7 @@ class main:
         time_1 = time.time()
         self.log = Logging.Log("Check_Main")
         Welcome.main()
-        time.sleep(0.1)
+        #time.sleep(0.1)
         judge = Check_toml.main().Return_bool()
         #print(judge)
         if judge:

@@ -35,6 +35,8 @@ class Load_Source:  # 载入所有必须的资源
             return self.curse_order
         elif output == "Name":
             return self.curse_name
+        elif output == "Interval":
+            return self.interval
         else:
             self.log.main("WARN", "参数错误，请检测参数设置")
         pass
@@ -91,6 +93,7 @@ class Select_Class:
         self.course_name = Load_Source().Return_Data("Name")  # 载入课程名称列表
         self.params = Load_Source().Return_Data("Params")  # 载入默认请求参数
         self.data = Load_Source().Return_Data("Data")  # 载入默认请求数据
+        self.sleep_time = Load_Source().Return_Data("Interval")
 
         self.jx0404id = None
         self.jx02id_get = None
@@ -104,6 +107,7 @@ class Select_Class:
 
     def run(self):
         if self.Check_failed_courses()==True:
+            self.log.main("INFO", "✅ 抢课模式运行中......")
             #执行正常抢课
             for i in range(len(self.Order_list)):
                 if self.Order_list[i] == []:
@@ -112,9 +116,11 @@ class Select_Class:
                 self.plan_order(self.Order_list[i])  # 已设置的选课顺序
             self.Save_Failed_Courses_To_Json()
         else:#存在失败的课程
+            self.log.main("INFO", "❌蹲课模式运行中......")
             self.failed_order(self.Order_list_fail)
 
     def failed_order(self,config):#候选选课
+        count = 0
         while True:
             try:
                 with open("./failed_courses.json","r",encoding="utf-8") as f:
@@ -166,6 +172,11 @@ class Select_Class:
             if judge_success == False:
                 self.log.main("INFO","✅全部课程选择成功")
                 break
+
+            count+=1
+            self.log.main("INFO", f"✅ 蹲课模式运行中,等待总时间：{count * self.sleep_time}秒,间隔时间为:{self.sleep_time}秒")
+            time.sleep(self.sleep_time)
+
 
     def default_order(self):
         for name in self.course_name:

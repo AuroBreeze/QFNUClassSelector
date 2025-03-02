@@ -4,7 +4,8 @@ class main:
     def __init__(self):
         self.log = Logging.Log("Welcome")
         self.log.main("INFO", "欢迎使用选课小助手")
-        self.log.main("INFO", "PowerBy: AuroBreeze W1ndys")
+        self.log.main("INFO", "Author: AuroBreeze")
+        self.log.main("INFO", "Powerby: W1ndys")
         self.log.main("INFO", "Lisence： GPL-V3")
         self.log.main("INFO", "Version： 1.1.0")
         self.log.main("INFO", "项目地址：https://github.com/AuroBreeze/QFNUClassSelector")

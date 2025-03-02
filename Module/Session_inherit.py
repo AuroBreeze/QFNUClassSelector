@@ -7,7 +7,7 @@ import time
 
 class Session_Inherit:
     def __init__(self,index):
-        self.session = login.mainss(index)  # 继承session
+        self.session = login.Login().Main()  # 继承session
         self.log= Logging.Log("Inherit_Session")
         self.index = index  # 保存当前登录的序号
         self.config = Timer.Timer().Return_config()
@@ -63,7 +63,7 @@ class Session_Inherit:
                 time.sleep(self.config['retry_time']/1000)
     def Get_Session_New(self): # 重新获取session
         session_old = self.session
-        self.session = login.mainss(self.index)
+        self.session = login.Login().Main()
         if session_old.cookies.get_dict() !=self.session.cookies.get_dict():
             self.log.main("INFO", "Session重新获取成功")
             return True

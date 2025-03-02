@@ -49,7 +49,7 @@ QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲�
 
 
 ## 安装步骤
-1. 确保已安装Python 3.6及以上版本。
+1. 确保已安装`Python 3.6<=version<=3.12`版本。
 2. 克隆项目到本地：
    ```bash
    git clone https://github.com/AuroBreze/QFNUClassSelector.git

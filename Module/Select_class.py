@@ -106,18 +106,19 @@ class Select_Class:
         return json_data
 
     def run(self):
-        if self.Check_failed_courses()==True:
-            self.log.main("INFO", "✅ 抢课模式运行中......")
-            #执行正常抢课
-            for i in range(len(self.Order_list)):
-                if self.Order_list[i] == []:
-                    self.default_order()  # 默认选课顺序
-                    continue
-                self.plan_order(self.Order_list[i])  # 已设置的选课顺序
-            self.Save_Failed_Courses_To_Json()
-        else:#存在失败的课程
-            self.log.main("INFO", "❌蹲课模式运行中......")
-            self.failed_order(self.Order_list_fail)
+        while True:
+            if self.Check_failed_courses()==True:
+                self.log.main("INFO", "✅ 抢课模式运行中......")
+                #执行正常抢课
+                for i in range(len(self.Order_list)):
+                    if self.Order_list[i] == []:
+                        self.default_order()  # 默认选课顺序
+                        continue
+                    self.plan_order(self.Order_list[i])  # 已设置的选课顺序
+                self.Save_Failed_Courses_To_Json()
+            else:#存在失败的课程
+                self.log.main("INFO", "❌蹲课模式运行中......")
+                self.failed_order(self.Order_list_fail)
 
     def failed_order(self,config):#候选选课
         count = 0

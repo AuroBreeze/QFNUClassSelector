@@ -1,249 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QFNU Class Selector</title>
-    <!-- 引入 Bootstrap CSS -->
+    <title>QFNU 选课配置</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 引入自定义 CSS -->
-    <link href="/static/css/styles.css" rel="stylesheet">
     <style>
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-control {
-            font-size: 0.9rem;
-        }
-        .form-text {
-            font-size: 0.8rem;
-        }
+        .config-section { margin-bottom: 2rem; border: 1px solid #ddd; padding: 1rem; border-radius: 5px; }
+        .dynamic-add { margin-top: 1rem; }
+        .course-card { margin-bottom: 1rem; }
     </style>
 </head>
 <body>
-    <main id="app" class="container mt-5">
-        <header>
-            <h1 class="text-center mb-4">QFNU Class Selector</h1>
-        </header>
-        <form action="/update" method="post">
-            <section>
-                <h2 class="section-title">登录配置</h2>
-                <div id="login-config-container">
-                    {% for group in config.Login.username %}
-                    <div class="form-group">
-                        <label for="username_{{ loop.index }}">用户名</label>
-                        <textarea class="form-control" id="username_{{ loop.index }}" name="username[{{ loop.index0 }}]" rows="1" required>{{ config.Login.username[loop.index0] }}</textarea>
-                        <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="password_{{ loop.index }}">密码</label>
-                        <textarea class="form-control" id="password_{{ loop.index }}" name="password[{{ loop.index0 }}]" rows="1" required>{{ config.Login.password[loop.index0] }}</textarea>
-                        <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
+    <div class="container mt-4">
+        <h1 class="mb-4">QFNU 选课系统配置</h1>
+        <form action="/update" method="POST">
+            
+            <!-- 登录配置 -->
+            <div class="config-section">
+                <h3>🔑 账号配置</h3>
+                <div id="login-configs">
+                    {% for user in config.Login.username %}
+                    <div class="login-group">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-5">
+                                <label>用户名</label>
+                                <input type="text" class="form-control" name="username[]" 
+                                       value="{{ user }}" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label>密码</label>
+                                <input type="password" class="form-control" name="password[]" 
+                                       value="{{ config.Login.password[loop.index0] }}" required>
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
-                <button type="button" class="btn btn-primary" id="add-login-config">+</button>
-            </section>
+                <button type="button" class="btn btn-secondary btn-sm dynamic-add" 
+                        onclick="addLoginConfig()">+ 添加账号</button>
+            </div>
 
-            <section>
-                <h2 class="section-title">多账号模式配置</h2>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="multiple" name="multiple" value="true" {% if config.Plan.Multiple %}checked{% endif %}>
-                        <label class="form-check-label" for="multiple">开启</label>
+            <!-- 模式配置 -->
+            <div class="config-section">
+                <h3>⚙️ 运行模式</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>抢课模式</label>
+                        <select class="form-select" name="mode_number">
+                            <option value="single" {% if config.Mode.Number == "single" %}selected{% endif %}>单人模式</option>
+                            <option value="multiple" {% if config.Mode.Number == "multiple" %}selected{% endif %}>多账号模式</option>
+                        </select>
                     </div>
-                    <small class="form-text">勾选以启用多选功能。</small>
+                    <div class="col-md-8">
+                        <label>运行策略</label>
+                        <div class="form-check">
+                            {% for mode in ["Start", "End"] %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" 
+                                       name="mode_select" value="{{ mode }}"
+                                       {% if mode in config.Mode.Select %}checked{% endif %}>
+                                <label class="form-check-label">{{ "抢课模式" if mode == "Start" else "候选模式" }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="multiple_judge">多选判断</label>
-                    <textarea class="form-control" id="multiple_judge" name="multiple_judge" rows="1">{{ config.Plan.Multiple_Judge | join(',') }}</textarea>
-                    <small class="form-text">请输入布尔值，多个布尔值用逗号分隔。</small>
-                </div>
-                <div class="form-group">
-                    <label for="multiple_account">多账号</label>
-                    <textarea class="form-control" id="multiple_account" name="multiple_account" rows="3">{{ config.Plan.Multiple_account | join(';') }}</textarea>
-                    <small class="form-text">请输入每个课程的账号名称，账号名称用逗号分隔，多个课程用分号分隔。</small>
-                </div>
-            </section>
+            </div>
 
-            <section>
-                <h2 class="section-title">课程计划</h2>
+            <!-- ⏰ 时间参数配置 -->
+            <div class="config-section">
+                <h3>⏰ 时间参数</h3>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label>开始时间</label>
+                        <input type="time" class="form-control" 
+                               name="start_time" 
+                               value="{{ config.Time.Start_time }}"
+                               required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>结束时间</label>
+                        <input type="time" class="form-control" 
+                               name="end_time" 
+                               value="{{ config.Time.End_time }}"
+                               required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>重试间隔 (ms)</label>
+                        <input type="number" class="form-control" 
+                               name="retry_time" 
+                               value="{{ config.Time.retry_time }}"
+                               min="100" step="100" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>检测间隔 (秒)</label>
+                        <input type="number" class="form-control" 
+                               name="interval" 
+                               value="{{ config.Time.Interval }}"
+                               min="10" step="10" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 课程计划配置 -->
+            <div class="config-section">
+                <h3>📚 课程配置</h3>
                 <div id="course-container">
                     {% for course in config.Plan.Course_name %}
-                    <div class="card mb-3 course-card">
+                    <div class="course-card card">
                         <div class="card-body">
-                            <h5 class="card-title">课程 {{ loop.index }}</h5>
-                            <div class="form-group">
-                                <label for="course_name_{{ loop.index }}">课程名称</label>
-                                <input type="text" class="form-control" id="course_name_{{ loop.index }}" name="course_name_{{ loop.index }}" value="{{ course }}" required>
-                                <small class="form-text">请输入课程名称。</small>
+                            <h5>课程 {{ loop.index }}</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>课程名称</label>
+                                    <input type="text" class="form-control" 
+                                           name="course_name_{{ loop.index }}" 
+                                           value="{{ course }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>优先级顺序</label>
+                                    <input type="text" class="form-control" 
+                                           name="course_order_{{ loop.index }}"
+                                           value="{{ config.Plan.Course_order[loop.index0] | join(',') }}"
+                                           placeholder="0,1,2 (多个用逗号分隔)">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>教师名单</label>
+                                    <input type="text" class="form-control" 
+                                           name="teachers_{{ loop.index }}"
+                                           value="{{ config.Plan.Teachers_name[loop.index0] | join(',') }}"
+                                           placeholder="多个用逗号分隔">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>时间段</label>
+                                    <input type="text" class="form-control" 
+                                           name="time_period_{{ loop.index }}"
+                                           value="{{ config.Plan.Time_period[loop.index0] | join(',') }}"
+                                           placeholder="例如: 1-2-,3-4-">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>星期</label>
+                                    <input type="text" class="form-control" 
+                                           name="week_day_{{ loop.index }}"
+                                           value="{{ config.Plan.Week_day[loop.index0] | join(',') }}"
+                                           placeholder="数字1-7，多个用逗号分隔">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="teachers_name_{{ loop.index }}">教师名称</label>
-                                <input type="text" class="form-control" id="teachers_name_{{ loop.index }}" name="teachers_name_{{ loop.index }}" value="{{ config.Plan.Teachers_name[loop.index0] | join(',') }}">
-                                <small class="form-text">请输入教师名称，多个教师名称用逗号分隔。</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="time_period_{{ loop.index }}">时间段</label>
-                                <input type="text" class="form-control" id="time_period_{{ loop.index }}" name="time_period_{{ loop.index }}" value="{{ config.Plan.Time_period[loop.index0] | join(',') }}">
-                                <small class="form-text">请输入时间段，时间段用逗号分隔。</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="week_day_{{ loop.index }}">星期</label>
-                                <input type="text" class="form-control" id="week_day_{{ loop.index }}" name="week_day_{{ loop.index }}" value="{{ config.Plan.Week_day[loop.index0] | join(',') }}">
-                                <small class="form-text">请输入星期，星期用逗号分隔。</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="course_order_{{ loop.index }}">课程顺序</label>
-                                <input type="text" class="form-control" id="course_order_{{ loop.index }}" name="course_order_{{ loop.index }}" value="{{ config.Plan.Course_order[loop.index0] | join(',') }}">
-                                <small class="form-text">请输入课程顺序，顺序用逗号分隔。</small>
-                            </div>
-                            <button type="button" class="btn btn-danger remove-course">Remove Course</button>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
-                <button type="button" class="btn btn-success" id="add-course">Add Course</button>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sfym" name="sfym" value="true" {% if config.Plan.sfym %}checked{% endif %}>
-                        <label class="form-check-label" for="sfym">过滤已满课程</label>
-                    </div>
-                    <small class="form-text">勾选以过滤已满课程。</small>
-                </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sfct" name="sfct" value="true" {% if config.Plan.sfct %}checked{% endif %}>
-                        <label class="form-check-label" for="sfct">过滤冲突课程</label>
-                    </div>
-                    <small class="form-text">勾选以过滤冲突课程。</small>
-                </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sfxx" name="sfxx" value="true" {% if config.Plan.sfxx %}checked{% endif %}>
-                        <label class="form-check-label" for="sfxx">过滤限选课程</label>
-                    </div>
-                    <small class="form-text">勾选以过滤限选课程。</small>
-                </div>
-                <div class="form-group">
-                    <label for="skxq_xx0103">校区代码</label>
-                    <input type="text" class="form-control" id="skxq_xx0103" name="skxq_xx0103" value="{{ config.Plan.skxq_xx0103 }}">
-                    <small class="form-text">请输入校区代码（1:曲阜, 2:日照, 68FD936EFC564F6E88EC852F9E8019C2:曲阜西校区）。</small>
-                </div>
-            </section>
+                <button type="button" class="btn btn-secondary btn-sm dynamic-add" 
+                        onclick="addCourse()">+ 添加课程</button>
+            </div>
 
-            <section>
-                <h2 class="section-title">定时任务</h2>
-                <div class="form-group">
-                    <label for="start_time">开始时间</label>
-                    <input type="text" class="form-control" id="start_time" name="start_time" value="{{ config.Time.Start_time }}" required>
-                    <small class="form-text">请输入开始时间，格式为HH:MM:SS。</small>
-                </div>
-                <div class="form-group">
-                    <label for="end_time">结束时间</label>
-                    <input type="text" class="form-control" id="end_time" name="end_time" value="{{ config.Time.End_time }}" required>
-                    <small class="form-text">请输入结束时间，格式为HH:MM:SS。</small>
-                </div>
-                <div class="form-group">
-                    <label for="interval">间隔时间</label>
-                    <input type="text" class="form-control" id="interval" name="interval" value="{{ config.Time.Interval }}" required>
-                    <small class="form-text">请输入间隔时间，单位为秒。</small>
-                </div>
-                <div class="form-group">
-                    <label for="retry_time">重试时间</label>
-                    <input type="text" class="form-control" id="retry_time" name="retry_time" value="{{ config.Time.retry_time }}" required>
-                    <small class="form-text">请输入重试时间，单位为毫秒。</small>
-                </div>
-            </section>
-
-            <button type="submit" class="btn btn-primary">Update</button>
+            <!-- 提交按钮 -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">保存配置</button>
+            </div>
         </form>
-    </main>
+    </div>
 
-    <!-- 引入 Bootstrap JS 和依赖 -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const addCourseButton = document.getElementById('add-course');
-            const courseContainer = document.getElementById('course-container');
-
-            let courseCount = {{ config.Plan.Course_name | length }};
-
-            addCourseButton.addEventListener('click', function() {
-                courseCount++;
-                const newCourseCard = document.createElement('div');
-                newCourseCard.className = 'card mb-3 course-card';
-                newCourseCard.innerHTML = `
+        // 动态添加课程配置
+        function addCourse() {
+            const container = document.getElementById('course-container');
+            const count = container.children.length + 1;
+            
+            const newCourse = `
+                <div class="course-card card">
                     <div class="card-body">
-                        <h5 class="card-title">课程 ${courseCount}</h5>
-                        <div class="form-group">
-                            <label for="course_name_${courseCount}">课程名称</label>
-                            <input type="text" class="form-control" id="course_name_${courseCount}" name="course_name_${courseCount}" required>
-                            <small class="form-text">请输入课程名称。</small>
+                        <h5>课程 ${count}</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label>课程名称</label>
+                                <input type="text" class="form-control" 
+                                       name="course_name_${count}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label>优先级顺序</label>
+                                <input type="text" class="form-control" 
+                                       name="course_order_${count}"
+                                       placeholder="0,1,2 (多个用逗号分隔)">
+                            </div>
+                            <div class="col-md-4">
+                                <label>教师名单</label>
+                                <input type="text" class="form-control" 
+                                       name="teachers_${count}"
+                                       placeholder="多个用逗号分隔">
+                            </div>
+                            <div class="col-md-4">
+                                <label>时间段</label>
+                                <input type="text" class="form-control" 
+                                       name="time_period_${count}"
+                                       placeholder="例如: 1-2-,3-4-">
+                            </div>
+                            <div class="col-md-4">
+                                <label>星期</label>
+                                <input type="text" class="form-control" 
+                                       name="week_day_${count}"
+                                       placeholder="数字1-7，多个用逗号分隔">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="teachers_name_${courseCount}">教师名称</label>
-                            <input type="text" class="form-control" id="teachers_name_${courseCount}" name="teachers_name_${courseCount}">
-                            <small class="form-text">请输入教师名称，多个教师名称用逗号分隔。</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="time_period_${courseCount}">时间段</label>
-                            <input type="text" class="form-control" id="time_period_${courseCount}" name="time_period_${courseCount}">
-                            <small class="form-text">请输入时间段，时间段用逗号分隔。</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="week_day_${courseCount}">星期</label>
-                            <input type="text" class="form-control" id="week_day_${courseCount}" name="week_day_${courseCount}">
-                            <small class="form-text">请输入星期，星期用逗号分隔。</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="course_order_${courseCount}">课程顺序</label>
-                            <input type="text" class="form-control" id="course_order_${courseCount}" name="course_order_${courseCount}">
-                            <small class="form-text">请输入课程顺序，顺序用逗号分隔。</small>
-                        </div>
-                        <button type="button" class="btn btn-danger remove-course">Remove Course</button>
                     </div>
-                `;
-                courseContainer.appendChild(newCourseCard);
-            });
+                </div>`;
+            container.insertAdjacentHTML('beforeend', newCourse);
+        }
 
-            courseContainer.addEventListener('click', function(event) {
-                if (event.target && event.target.classList.contains('remove-course')) {
-                    event.target.closest('.course-card').remove();
-                }
-            });
-
-            const addLoginConfigButton = document.getElementById('add-login-config');
-            const loginConfigContainer = document.getElementById('login-config-container');
-
-            let loginConfigCount = {{ config.Login.username | length }};
-
-            addLoginConfigButton.addEventListener('click', function() {
-                loginConfigCount++;
-                const newLoginConfig = document.createElement('div');
-                newLoginConfig.innerHTML = `
-                    <div class="form-group">
-                        <label for="username_${loginConfigCount}">用户名</label>
-                        <textarea class="form-control" id="username_${loginConfigCount}" name="username[${loginConfigCount - 1}]" rows="1" required></textarea>
-                        <small class="form-text">请输入用户名，多个用户名用逗号分隔。</small>
+        // 动态添加登录配置
+        function addLoginConfig() {
+            const container = document.getElementById('login-configs');
+            const newLogin = `
+                <div class="login-group">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-5">
+                            <label>用户名</label>
+                            <input type="text" class="form-control" name="username[]" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label>密码</label>
+                            <input type="password" class="form-control" name="password[]" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password_${loginConfigCount}">密码</label>
-                        <textarea class="form-control" id="password_${loginConfigCount}" name="password[${loginConfigCount - 1}]" rows="1" required></textarea>
-                        <small class="form-text">请输入密码，多个密码用逗号分隔。</small>
-                    </div>
-                    <button type="button" class="btn btn-danger remove-login-config">-</button>
-                `;
-                loginConfigContainer.appendChild(newLoginConfig);
-            });
-
-            loginConfigContainer.addEventListener('click', function(event) {
-                if (event.target && event.target.classList.contains('remove-login-config')) {
-                    event.target.parentElement.remove();
-                }
-            });
-        });
+                </div>`;
+            container.insertAdjacentHTML('beforeend', newLogin);
+        }
     </script>
 </body>
 </html>

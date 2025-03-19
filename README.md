@@ -3,7 +3,6 @@
 
 
 <p align="center">
-    <p align="center">
     <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/github/stars/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Stars">
     <img src="https://img.shields.io/github/issues/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Issues">
@@ -74,7 +73,7 @@ python WebUI/WebUI.py
    ```bash
    git clone https://github.com/AuroBreze/QFNUClassSelector.git
    cd QFNUClassSelector
-   
+   ```
 ## 配置文件说明
 `config.toml`文件的配置项说明：
 
@@ -96,7 +95,6 @@ Course_name = ["课程1","课程2","课程3"] # 课程名字,可以填多个(必
 [Time]#设置定时任务
 Start_time = "09:00:00" # 定时任务开始时间 (必填)
 End_time = "09:10:00" # 定时任务结束时间，结束后自动启用END模式 (必填)
-
 ```
 
 > [!NOTE]

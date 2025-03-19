@@ -1,7 +1,10 @@
 # QFNUClassSelector
-> QFNU 抢课脚本 | 大学抢课脚本 | 学院抢课脚本 | 懒人专用
+> QFNU 抢课脚本 | 可视化配置界面 | 智能时间管理 | 多账号支持
+
 
 <p align="center">
+    <p align="center">
+    <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/github/stars/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Stars">
     <img src="https://img.shields.io/github/issues/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Issues">
     <img src="https://img.shields.io/badge/Python-3.12.3-blue.svg" alt="Python">
@@ -22,6 +25,23 @@
 
 ## 项目描述
 QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲阜师范大学的选课系统的学生设计。该脚本可以帮助学生自动抢选课程，提高选课效率。
+
+## 🚀 新特性
+- **可视化配置界面**：通过 WebUI 轻松管理所有配置参数
+- **智能时间管理**：支持设置抢课时段和智能重试间隔
+- **跨午夜时间支持**：可配置 00:00 后的结束时间
+- **健壮的表单验证**：自动处理空值和非法输入
+
+## 📝 使用说明
+
+### 🖥️ WebUI 使用
+```bash
+# 启动可视化配置界面
+python WebUI/WebUI.py
+
+# 访问 http://localhost:5000 进行配置
+```
+
 
 ## 📝 免责声明
 

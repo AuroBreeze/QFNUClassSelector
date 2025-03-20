@@ -9,14 +9,30 @@
         .config-section { margin-bottom: 2rem; border: 1px solid #ddd; padding: 1rem; border-radius: 5px; }
         .dynamic-add { margin-top: 1rem; }
         .course-card { margin-bottom: 1rem; }
-    </style>
+            @media (min-width: 768px) {
+                .login-group .btn {
+                    margin-top: 1.8rem;
+                }
+            } /* 添加缺失的闭合括号 */
+</style>
 </head>
 <body>
+    <!-- 在表单上方添加消息展示区域 -->
     <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <h1 class="mb-4">QFNU 选课系统配置</h1>
         <form action="/update" method="POST">
             
-            <!-- 登录配置 -->
+            <!--登录配置-->
             <div class="config-section">
                 <h3>🔑 账号配置</h3>
                 <div id="login-configs">
@@ -32,6 +48,11 @@
                                 <label>密码</label>
                                 <input type="password" class="form-control" name="password[]" 
                                        value="{{ config.Login.password[loop.index0] }}" required>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center pt-3">
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        {% if loop.length == 1 %}disabled{% endif %}
+                                        onclick="deleteLoginConfig(this)">删除</button>
                             </div>
                         </div>
                     </div>
@@ -110,7 +131,12 @@
                     {% for course in config.Plan.Course_name %}
                     <div class="course-card card">
                         <div class="card-body">
-                            <h5>课程 {{ loop.index }}</h5>
+                            <!-- 修正课程删除按钮布局 -->
+                            <div class="d-flex justify-content-between align-items-center">  <!-- 添加垂直居中 -->
+                                <h5>课程 {{ loop.index }}</h5>
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        onclick="deleteCourse(this)">删除</button>
+                            </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label>课程名称</label>
@@ -225,6 +251,35 @@
                     </div>
                 </div>`;
             container.insertAdjacentHTML('beforeend', newLogin);
+        }
+
+        // 新增删除登录配置功能
+        function deleteLoginConfig(button) {
+            const loginGroup = button.closest('.login-group');
+            if (document.querySelectorAll('.login-group').length > 1) {
+                loginGroup.remove();
+            } else {
+                alert('至少需要保留一个账号配置');
+            }
+        }
+    </script>
+    <script>
+        // 新增课程删除功能
+        function deleteCourse(button) {
+            const courseCard = button.closest('.course-card');
+            if (document.querySelectorAll('.course-card').length > 1) {
+                courseCard.remove();
+                renumberCourses();
+            } else {
+                alert('至少需要保留一个课程配置');
+            }
+        }
+
+        // 重新编号课程
+        function renumberCourses() {
+            document.querySelectorAll('.course-card').forEach((card, index) => {
+                card.querySelector('h5').textContent = `课程 ${index + 1}`;
+            });
         }
     </script>
 </body>

@@ -17,9 +17,16 @@ def index():
 @app.route('/update', methods=['POST'])
 def update():
     try:
-        # 获取表单数据
+        # 首先获取账号配置数据
         username = request.form.getlist('username[]')
         password = request.form.getlist('password[]')
+        
+        # 然后获取模式参数并进行验证
+        mode_number = request.form.get('mode_number', 'single')
+        if mode_number == 'single' and len(username) > 1:
+            flash('单人模式仅支持单个账号', 'danger')
+            return redirect(url_for('index'))
+
         course_name = []
         teachers_name = []
         time_period = []

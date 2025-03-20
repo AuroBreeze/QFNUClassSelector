@@ -51,15 +51,19 @@
                             </div>
                             <div class="col-md-2 d-flex align-items-center pt-3">
                                 <button type="button" class="btn btn-danger btn-sm" 
-                                        {% if loop.length == 1 %}disabled{% endif %}
+                                        {% if loop.length == 1 and config.Mode.Number == "single" %}disabled{% endif %}
                                         onclick="deleteLoginConfig(this)">删除</button>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
+                <!-- 修改登录配置部分的添加按钮 -->
                 <button type="button" class="btn btn-secondary btn-sm dynamic-add" 
-                        onclick="addLoginConfig()">+ 添加账号</button>
+                        onclick="addLoginConfig()"
+                        {% if config.Mode.Number == "single" %}style="display:none;"{% endif %}>
+                    + 添加账号
+                </button>
             </div>
 
             <!-- 模式配置 -->
@@ -68,7 +72,7 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label>抢课模式</label>
-                        <select class="form-select" name="mode_number">
+                        <select class="form-select" name="mode_number" id="modeSelect" onchange="toggleAddAccount()">
                             <option value="single" {% if config.Mode.Number == "single" %}selected{% endif %}>单人模式</option>
                             <option value="multiple" {% if config.Mode.Number == "multiple" %}selected{% endif %}>多账号模式</option>
                         </select>
@@ -281,6 +285,39 @@
                 card.querySelector('h5').textContent = `课程 ${index + 1}`;
             });
         }
+    </script>
+    <script>
+        function toggleAddAccount() {
+            const modeSelect = document.getElementById('modeSelect');
+            const addButton = document.querySelector('#login-configs + .dynamic-add');
+            const loginGroups = document.querySelectorAll('.login-group');
+            
+            if (modeSelect.value === 'multiple') {
+                addButton.style.display = 'block';
+                loginGroups.forEach(btn => btn.querySelector('.btn-danger').disabled = false);
+            } else {
+                addButton.style.display = 'none';
+                // 删除所有非第一个账号配置
+                loginGroups.forEach((group, index) => {
+                    if (index > 0) group.remove();
+                });
+                // 禁用第一个删除按钮
+                if (loginGroups[0]) {
+                    loginGroups[0].querySelector('.btn-danger').disabled = true;
+                }
+                // 强制保留至少一个账号
+                if (loginGroups.length === 0) addLoginConfig();
+            }
+        }
+    
+        // 初始化时执行清理（新增）
+        document.addEventListener('DOMContentLoaded', () => {
+            const mode = "{{ config.Mode.Number }}";
+            if (mode === 'single') {
+                document.querySelectorAll('.login-group:not(:first-child)').forEach(group => group.remove());
+            }
+            toggleAddAccount();
+        });
     </script>
 </body>
 </html>

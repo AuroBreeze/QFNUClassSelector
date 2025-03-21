@@ -21,23 +21,52 @@
 </head>
 <body>
     <!-- 删除整个消息展示区域 -->
-    <div class="container mt-4">
-        <!-- 移除以下Jinja2模板代码 -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <h1 class="mb-4">QFNU 选课系统配置</h1>
-        <form action="/update" method="POST">
+    <!-- 原运行模式配置区块前移 -->
+    <!-- ======================== 原第41行左右开始 ======================== -->
+        <div class="container mt-4">
+            <!-- 移除以下Jinja2模板代码 -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
             
-            <!--登录配置-->
+            <h1 class="mb-4">QFNU 选课系统配置</h1>
+            <form action="/update" method="POST">
+            
+            <!-- 将模式配置移动到登录配置之前 -->
+            <div class="config-section">
+                <h3>⚙️ 运行模式</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>抢课模式</label>
+                        <select class="form-select" name="mode_number" id="modeSelect" onchange="toggleAddAccount()">
+                            <option value="single" {% if config.Mode.Number == "single" %}selected{% endif %}>单人模式</option>
+                            <option value="multiple" {% if config.Mode.Number == "multiple" %}selected{% endif %}>多账号模式</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label>运行策略</label>
+                        <div class="form-check">
+                            {% for mode in ["Start", "End"] %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" 
+                                       name="mode_select" value="{{ mode }}"
+                                       {% if mode in config.Mode.Select %}checked{% endif %}>
+                                <label class="form-check-label">{{ "抢课模式" if mode == "Start" else "候选模式" }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 原账号配置区块下移 -->
             <div class="config-section">
                 <h3>🔑 账号配置</h3>
                 <div id="login-configs">
@@ -71,33 +100,6 @@
                         {% if config.Mode.Number == "single" %}style="display:none;"{% endif %}>
                     + 添加账号
                 </button>
-            </div>
-
-            <!-- 模式配置 -->
-            <div class="config-section">
-                <h3>⚙️ 运行模式</h3>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label>抢课模式</label>
-                        <select class="form-select" name="mode_number" id="modeSelect" onchange="toggleAddAccount()">
-                            <option value="single" {% if config.Mode.Number == "single" %}selected{% endif %}>单人模式</option>
-                            <option value="multiple" {% if config.Mode.Number == "multiple" %}selected{% endif %}>多账号模式</option>
-                        </select>
-                    </div>
-                    <div class="col-md-8">
-                        <label>运行策略</label>
-                        <div class="form-check">
-                            {% for mode in ["Start", "End"] %}
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" 
-                                       name="mode_select" value="{{ mode }}"
-                                       {% if mode in config.Mode.Select %}checked{% endif %}>
-                                <label class="form-check-label">{{ "抢课模式" if mode == "Start" else "候选模式" }}</label>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- ⏰ 时间参数配置 -->

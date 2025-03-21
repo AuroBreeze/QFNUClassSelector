@@ -9,11 +9,14 @@
         .config-section { margin-bottom: 2rem; border: 1px solid #ddd; padding: 1rem; border-radius: 5px; }
         .dynamic-add { margin-top: 1rem; }
         .course-card { margin-bottom: 1rem; }
-            @media (min-width: 768px) {
-                .login-group .btn {
-                    margin-top: 1.8rem;
-                }
-            } /* 添加缺失的闭合括号 */
+
+</style>
+<style>
+    @media (min-width: 768px) {
+        .login-group .btn {
+            margin-top: 0; /* 移除桌面端按钮的上边距 */
+        }
+    }
 </style>
 </head>
 <body>
@@ -37,9 +40,9 @@
                 <h3>🔑 账号配置</h3>
                 <div id="login-configs">
                     {% for user in config.Login.username %}
-                    <div class="login-group">
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-5">
+                                        <div class="login-group">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-5">
                                 <label>用户名</label>
                                 <input type="text" class="form-control" name="username[]" 
                                        value="{{ user }}" required>
@@ -49,8 +52,9 @@
                                 <input type="password" class="form-control" name="password[]" 
                                        value="{{ config.Login.password[loop.index0] }}" required>
                             </div>
+                            <!-- 登录配置部分 -->
                             <div class="col-md-2 d-flex align-items-center pt-3">
-                                <button type="button" class="btn btn-danger btn-sm" 
+                                <button type="button" class="btn btn-danger btn-sm align-self-center" 
                                         {% if loop.length == 1 and config.Mode.Number == "single" %}disabled{% endif %}
                                         onclick="deleteLoginConfig(this)">删除</button>
                             </div>

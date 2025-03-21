@@ -17,24 +17,25 @@ def index():
 @app.route('/update', methods=['POST'])
 def update():
     try:
-        # 清理空值并验证账号密码
+        # 处理基础表单数据
         username = [u.strip() for u in request.form.getlist('username[]') if u.strip()]
         password = [p.strip() for p in request.form.getlist('password[]') if p.strip()]
+        mode_number = request.form.get('mode_number', 'single')  # 必须最先获取模式参数
         
-        # 新增账号密码配对验证
-        if len(username) != len(password):
-            app.logger.error(f'账号密码数量不匹配: 用户名{len(username)}个 密码{len(password)}个')
-            return redirect(url_for('index'))
-            
-        # 强制同步账号密码列表
-        config['Login']['username'] = username
-        config['Login']['password'] = password
-        mode_number = request.form.get('mode_number', 'single')
-        
-        # 新增模式参数验证
+        # 立即验证模式与账号数量关系
         if mode_number == 'single' and len(username) > 1:
             return redirect(url_for('index'))
 
+        # 读取当前配置（必须在表单处理之后）
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            config = toml.load(f)
+            
+        # 更新核心配置项（必须最先更新模式）
+        config['Mode']['Number'] = mode_number
+        config['Login']['username'] = username
+        config['Login']['password'] = password
+        
+        # 以下处理其他配置项（保持原有逻辑）
         course_name = []
         teachers_name = []
         time_period = []
@@ -96,7 +97,7 @@ def update():
     
         # 更新配置
         # 更新配置时添加模式参数
-        config['Mode']['Number'] = mode_number  # <-- 新增这行
+        config['Mode']['Number'] = mode_number  # 确保更新模式参数
         config['Login']['username'] = username
         config['Login']['password'] = password
         config['Plan']['Course_name'] = course_name

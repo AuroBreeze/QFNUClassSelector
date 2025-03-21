@@ -140,6 +140,23 @@
             <!-- 课程计划配置 -->
             <div class="config-section">
                 <h3>📚 课程配置</h3>
+                <div class="alert alert-warning mb-3">
+                    <strong>配置规范说明：</strong>
+                    <ul class="mb-0">
+                        <li>优先级顺序：必须使用数字0-5，多个用英文逗号分隔（例：0,1,3）对应：
+                            0-选修选课 | 1-本学期计划内 | 2-专业内跨年级 | 3-计划外 | 4-公选课 | 5-辅修课</li>
+                        <li>教师名单：多个教师用英文逗号分隔（例：张三,李四），留空表示不限教师</li>
+                        <li>时间段：必须严格按以下格式填写：
+                            <ul>
+                                <li>标准格式："开始节次-结束节次"（例：1-2 表示1-2节课）</li>
+                                <li>特殊多节格式："连续节次"（例：9-10-11 表示9-11连续三节课）</li>
+                                <li>多个时间段用英文逗号分隔（例：1-2-,3-4-,9-10-11）</li>
+                            </ul>
+                        </li>
+                        <li>星期：填写数字1-7对应周一到周日，多个用英文逗号分隔（例：1,3,5）</li>
+                    </ul>
+                </div>
+    
                 <div id="course-container">
                     {% for course in config.Plan.Course_name %}
                     <div class="course-card card">

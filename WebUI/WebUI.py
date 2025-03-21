@@ -24,7 +24,6 @@ def update():
         # 然后获取模式参数并进行验证
         mode_number = request.form.get('mode_number', 'single')
         if mode_number == 'single' and len(username) > 1:
-            flash('单人模式仅支持单个账号', 'danger')
             return redirect(url_for('index'))
 
         course_name = []
@@ -124,19 +123,11 @@ def update():
         config['Time']['retry_time'] = int(retry_time)
     
         # 写入更新后的配置到 config.toml 文件
-        # 确保写入时保留中文编码
         with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
             toml.dump(config, f)
     
-        # 这个重定向语句导致了 302 状态码
-        return redirect(url_for('index'))  # <mcsymbol name="update" filename="WebUI.py" path="c:\code\QFNUClassSelector\WebUI\WebUI.py" startline="17" type="function"></mcsymbol>
-        
-        # 添加成功反馈
-        from flask import flash
-        flash('配置更新成功', 'success')
+        return redirect(url_for('index'))
     except Exception as e:
-        # 添加错误处理
-        flash(f'配置更新失败: {str(e)}', 'danger')
         app.logger.error(f'Update error: {str(e)}')
     
     return redirect(url_for('index'))

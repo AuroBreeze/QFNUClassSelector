@@ -20,8 +20,9 @@
 </style>
 </head>
 <body>
-    <!-- 在表单上方添加消息展示区域 -->
+    <!-- 删除整个消息展示区域 -->
     <div class="container mt-4">
+        <!-- 移除以下Jinja2模板代码 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -32,6 +33,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        
         <h1 class="mb-4">QFNU 选课系统配置</h1>
         <form action="/update" method="POST">
             

@@ -17,12 +17,21 @@ def index():
 @app.route('/update', methods=['POST'])
 def update():
     try:
-        # 首先获取账号配置数据
-        username = request.form.getlist('username[]')
-        password = request.form.getlist('password[]')
+        # 清理空值并验证账号密码
+        username = [u.strip() for u in request.form.getlist('username[]') if u.strip()]
+        password = [p.strip() for p in request.form.getlist('password[]') if p.strip()]
         
-        # 然后获取模式参数并进行验证
+        # 新增账号密码配对验证
+        if len(username) != len(password):
+            app.logger.error(f'账号密码数量不匹配: 用户名{len(username)}个 密码{len(password)}个')
+            return redirect(url_for('index'))
+            
+        # 强制同步账号密码列表
+        config['Login']['username'] = username
+        config['Login']['password'] = password
         mode_number = request.form.get('mode_number', 'single')
+        
+        # 新增模式参数验证
         if mode_number == 'single' and len(username) > 1:
             return redirect(url_for('index'))
 
@@ -86,6 +95,8 @@ def update():
             config = toml.load(f)
     
         # 更新配置
+        # 更新配置时添加模式参数
+        config['Mode']['Number'] = mode_number  # <-- 新增这行
         config['Login']['username'] = username
         config['Login']['password'] = password
         config['Plan']['Course_name'] = course_name

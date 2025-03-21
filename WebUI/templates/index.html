@@ -51,8 +51,9 @@
                             </div>
                             <div class="col-md-5">
                                 <label>密码</label>
+                                <!-- 修复密码字段索引 -->
                                 <input type="password" class="form-control" name="password[]" 
-                                       value="{{ config.Login.password[loop.index0] }}" required>
+                                       value="{{ config.Login.password[loop.index0] }}" required> <!-- 使用相同索引 -->
                             </div>
                             <!-- 登录配置部分 -->
                             <div class="col-md-2 d-flex align-items-center pt-3">
@@ -252,11 +253,13 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-5">
                             <label>用户名</label>
-                            <input type="text" class="form-control" name="username[]" required>
+                            <input type="text" class="form-control" 
+                                   name="username[]" required> <!-- 保持name属性一致 -->
                         </div>
                         <div class="col-md-5">
                             <label>密码</label>
-                            <input type="password" class="form-control" name="password[]" required>
+                            <input type="password" class="form-control" 
+                                   name="password[]" required> <!-- 保持name属性一致 -->
                         </div>
                         <div class="col-md-2 d-flex align-items-center pt-3">
                             <button type="button" 
@@ -346,12 +349,20 @@
             }
         }
     
-        // 初始化时执行清理（新增）
+        // 修正后的初始化逻辑
         document.addEventListener('DOMContentLoaded', () => {
             const mode = "{{ config.Mode.Number }}";
+            const modeSelect = document.getElementById('modeSelect');
+            const addButton = document.querySelector('#login-configs + .dynamic-add');
+            
+            // 强制同步模式状态
+            modeSelect.value = mode;
             if (mode === 'single') {
+                // 清理多余账号配置
                 document.querySelectorAll('.login-group:not(:first-child)').forEach(group => group.remove());
+                addButton.style.display = 'none';
             }
+            // 触发一次模式切换回调
             toggleAddAccount();
         });
     </script>

@@ -82,10 +82,11 @@ def update():
                 # 分割单个课程内的账号，过滤空值
                 accounts = [a.strip() for a in group.split(',') if a.strip()]
                 multiple_account.append(accounts)
-        sfym = request.form.get('sfym') == 'true'
-        sfct = request.form.get('sfct') == 'true'
-        sfxx = request.form.get('sfxx') == 'true'
-        skxq_xx0103 = request.form.get('skxq_xx0103')
+        # 在update路由中添加以下处理逻辑
+        config['Plan']['sfym'] = 'sfym' in request.form
+        config['Plan']['sfct'] = 'sfct' in request.form
+        config['Plan']['sfxx'] = 'sfxx' in request.form
+        config['Plan']['skxq_xx0103'] = request.form.get('skxq_xx0103', '1')
         start_time = request.form.get('start_time')
         end_time = request.form.get('end_time')
         interval = request.form.get('interval')

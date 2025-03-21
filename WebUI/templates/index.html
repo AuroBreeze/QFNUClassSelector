@@ -103,6 +103,49 @@
             </div>
 
             <!-- ⏰ 时间参数配置 -->
+            <!-- 新增过滤配置区块 -->
+            <div class="config-section">
+                <h3>⚖️ 过滤设置</h3>
+                <div class="row g-3">
+                    <!-- 过滤选项 -->
+                    <div class="col-md-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="sfym" 
+                                   id="sfym" {% if config.Plan.sfym %}checked{% endif %}>
+                            <label class="form-check-label" for="sfym">过滤已满课程</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="sfct" 
+                                   id="sfct" {% if config.Plan.sfct %}checked{% endif %}>
+                            <label class="form-check-label" for="sfct">过滤冲突课程</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="sfxx" 
+                                   id="sfxx" {% if config.Plan.sfxx %}checked{% endif %}>
+                            <label class="form-check-label" for="sfxx">过滤限选课程</label>
+                        </div>
+                    </div>
+                    
+                    <!-- 校区选择 -->
+                    <div class="col-md-6">
+                        <label>校区选择</label>
+                        <select class="form-select" name="skxq_xx0103">
+                            <option value="1" {% if config.Plan.skxq_xx0103 == 1 %}selected{% endif %}>曲阜校区</option>
+                            <option value="2" {% if config.Plan.skxq_xx0103 == 2 %}selected{% endif %}>日照校区</option>
+                            <option value="68FD936EFC564F6E88EC852F9E8019C2" 
+                                    {% if config.Plan.skxq_xx0103 == "68FD936EFC564F6E88EC852F9E8019C2" %}selected{% endif %}>
+                                    曲阜西校区
+                                </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 原时间参数配置保持不变 -->
             <div class="config-section">
                 <h3>⏰ 时间参数</h3>
                 <div class="row g-3">

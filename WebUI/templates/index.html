@@ -256,12 +256,45 @@
                             <label>密码</label>
                             <input type="password" class="form-control" name="password[]" required>
                         </div>
+                        <div class="col-md-2 d-flex align-items-center pt-3">
+                            <button type="button" 
+                                    class="btn btn-danger btn-sm align-self-center"
+                                    onclick="deleteLoginConfig(this)">删除</button>
+                        </div>
                     </div>
                 </div>`;
             container.insertAdjacentHTML('beforeend', newLogin);
+            
+            // 同步列宽设置
+            const newGroup = container.lastElementChild;
+            newGroup.querySelectorAll('.col-md-5').forEach(col => {
+                col.classList.add('col-md-5');
+                col.classList.remove('col-md-6');
+            });
         }
 
-        // 新增删除登录配置功能
+        // 修改模式切换函数（补充列宽设置）
+        function toggleAddAccount() {
+            const modeSelect = document.getElementById('modeSelect');
+            const addButton = document.querySelector('#login-configs + .dynamic-add');
+            const loginGroups = document.querySelectorAll('.login-group');
+            
+            if (modeSelect.value === 'multiple') {
+                addButton.style.display = 'block';
+                loginGroups.forEach(group => {
+                    group.querySelector('.col-md-5').classList.remove('col-md-6'); // 确保列宽正确
+                    group.querySelector('.btn-danger').disabled = false;
+                });
+            } else {
+                addButton.style.display = 'none';
+                loginGroups.forEach((group, index) => {
+                    if (index > 0) group.remove();
+                    if (index === 0) group.querySelector('.btn-danger').disabled = true;
+                });
+            }
+        }
+    
+        // 确保删除功能正确绑定
         function deleteLoginConfig(button) {
             const loginGroup = button.closest('.login-group');
             if (document.querySelectorAll('.login-group').length > 1) {
@@ -291,6 +324,7 @@
         }
     </script>
     <script>
+        // 修改模式切换函数
         function toggleAddAccount() {
             const modeSelect = document.getElementById('modeSelect');
             const addButton = document.querySelector('#login-configs + .dynamic-add');
@@ -298,19 +332,15 @@
             
             if (modeSelect.value === 'multiple') {
                 addButton.style.display = 'block';
-                loginGroups.forEach(btn => btn.querySelector('.btn-danger').disabled = false);
+                loginGroups.forEach(group => {
+                    group.querySelector('.btn-danger').disabled = false;
+                });
             } else {
                 addButton.style.display = 'none';
-                // 删除所有非第一个账号配置
                 loginGroups.forEach((group, index) => {
                     if (index > 0) group.remove();
+                    if (index === 0) group.querySelector('.btn-danger').disabled = true;
                 });
-                // 禁用第一个删除按钮
-                if (loginGroups[0]) {
-                    loginGroups[0].querySelector('.btn-danger').disabled = true;
-                }
-                // 强制保留至少一个账号
-                if (loginGroups.length === 0) addLoginConfig();
             }
         }
     

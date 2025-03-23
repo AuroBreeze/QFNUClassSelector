@@ -74,6 +74,10 @@ def update():
         config['Login']['username'] = username
         config['Login']['password'] = password
         
+        # 处理运行策略选择
+        mode_select = request.form.getlist('mode_select')
+        config['Mode']['Select'] = mode_select if mode_select else ["Start"]
+        
         # 处理课程配置
         course_name = []
         teachers_name = []

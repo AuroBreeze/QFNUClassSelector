@@ -223,6 +223,12 @@
                                            name="course_order_{{ loop.index }}"
                                            value="{{ config.Plan.Course_order[loop.index0] | join(',') }}"
                                            placeholder="0,1,2 (多个用逗号分隔)">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="course_order_unlimited_{{ loop.index }}"
+                                               {% if "" in config.Plan.Course_order[loop.index0] %}checked{% endif %}>
+                                        <label class="form-check-label">不限优先级顺序</label>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label>教师名单</label>
@@ -230,6 +236,12 @@
                                            name="teachers_{{ loop.index }}"
                                            value="{{ config.Plan.Teachers_name[loop.index0] | join(',') }}"
                                            placeholder="多个用逗号分隔">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="teachers_unlimited_{{ loop.index }}"
+                                               {% if "" in config.Plan.Teachers_name[loop.index0] %}checked{% endif %}>
+                                        <label class="form-check-label">不限教师</label>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label>时间段</label>
@@ -237,6 +249,12 @@
                                            name="time_period_{{ loop.index }}"
                                            value="{{ config.Plan.Time_period[loop.index0] | join(',') }}"
                                            placeholder="例如: 1-2-,3-4-">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="time_period_unlimited_{{ loop.index }}"
+                                               {% if "" in config.Plan.Time_period[loop.index0] %}checked{% endif %}>
+                                        <label class="form-check-label">不限时间段</label>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label>星期</label>
@@ -244,6 +262,12 @@
                                            name="week_day_{{ loop.index }}"
                                            value="{{ config.Plan.Week_day[loop.index0] | join(',') }}"
                                            placeholder="数字1-7，多个用逗号分隔">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="week_day_unlimited_{{ loop.index }}"
+                                               {% if "" in config.Plan.Week_day[loop.index0] %}checked{% endif %}>
+                                        <label class="form-check-label">不限星期</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

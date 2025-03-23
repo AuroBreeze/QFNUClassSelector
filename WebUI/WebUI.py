@@ -93,11 +93,27 @@ def update():
             time_period_val = request.form.get(f'time_period_{course_count}', '')
             week_day_val = request.form.get(f'week_day_{course_count}', '')
             course_order_val = request.form.get(f'course_order_{course_count}', '')
-        
-            teachers_name.append(teachers.split(',') if teachers else [])
-            time_period.append(time_period_val.split(',') if time_period_val else [])
-            week_day.append(week_day_val.split(',') if week_day_val else [])
-            course_order.append(course_order_val.split(',') if course_order_val else [])
+            
+            # 处理不限条件的选项
+            if request.form.get(f'teachers_unlimited_{course_count}'):
+                teachers_name.append([""])
+            else:
+                teachers_name.append(teachers.split(',') if teachers else [])
+            
+            if request.form.get(f'time_period_unlimited_{course_count}'):
+                time_period.append([""])
+            else:
+                time_period.append(time_period_val.split(',') if time_period_val else [])
+            
+            if request.form.get(f'week_day_unlimited_{course_count}'):
+                week_day.append([""])
+            else:
+                week_day.append(week_day_val.split(',') if week_day_val else [])
+            
+            if request.form.get(f'course_order_unlimited_{course_count}'):
+                course_order.append([""])
+            else:
+                course_order.append(course_order_val.split(',') if course_order_val else [])
     
         # 处理过滤条件
         config['Plan']['sfym'] = 'sfym' in request.form

@@ -134,8 +134,8 @@
                     <div class="col-md-6">
                         <label>校区选择</label>
                         <select class="form-select" name="skxq_xx0103">
-                            <option value="1" {% if config.Plan.skxq_xx0103 == 1 %}selected{% endif %}>曲阜校区</option>
-                            <option value="2" {% if config.Plan.skxq_xx0103 == 2 %}selected{% endif %}>日照校区</option>
+                            <option value="1" {% if config.Plan.skxq_xx0103 == 1 or config.Plan.skxq_xx0103 == "1" %}selected{% endif %}>曲阜校区</option>
+                            <option value="2" {% if config.Plan.skxq_xx0103 == 2 or config.Plan.skxq_xx0103 == "2" %}selected{% endif %}>日照校区</option>
                             <option value="68FD936EFC564F6E88EC852F9E8019C2" 
                                     {% if config.Plan.skxq_xx0103 == "68FD936EFC564F6E88EC852F9E8019C2" %}selected{% endif %}>
                                     曲阜西校区

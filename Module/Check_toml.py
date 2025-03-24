@@ -11,14 +11,14 @@ class main:
         try: #此文件用来统计配置文件中列表及子列表的长度
             # 读取check.toml文件，如果不存在则创建
 
-            with open('./check.toml', 'r') as f:
+            with open('./check.toml', 'r',encoding="utf-8") as f:
                 self.check = toml.load(f)
         except FileNotFoundError:
             self.log.main("ERROR", '未找到check.toml文件')
             self.bool = False
 
         try:
-            with open('./config.toml', 'r') as f:
+            with open('./config.toml', 'r',encoding="utf-8") as f:
                 self.config = toml.load(f)
         except FileNotFoundError:
             self.log.main("ERROR", '未找到config.toml文件')

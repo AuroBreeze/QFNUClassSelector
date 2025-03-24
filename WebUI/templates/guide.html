@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>使用指南 - QFNU选课系统</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .code-block {background: #f8f9fa; padding: 1rem; border-radius: 4px; margin: 1rem 0}
+        .warning-alert {border-left: 4px solid #ffc107; padding-left: 1rem}
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="mb-4">📖 使用指南</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>🖥️ 可视化配置</h3>
+                <ol>
+                    <li>启动WebUI服务：<code>python WebUI/WebUI.py</code></li>
+                    <li>访问 <a href="http://localhost:5000">http://localhost:5000</a></li>
+                    <li>在"课程配置"板块添加目标课程</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>⚙️ 配置参数说明</h3>
+                <div class="code-block">
+                    <h5>config.toml 核心配置</h5>
+                    <pre><code>[Login]
+username = ["学号"]  # 必填
+password = ["密码"]  # 必填
+
+[Plan]
+Course_name = ["课程名称"]  # 支持多个课程</code></pre>
+                </div>
+
+                <div class="warning-alert mt-3">
+                    <h5>⚠️ 注意事项</h5>
+                    <ul>
+                        <li>时间参数支持跨午夜设置（如23:00 - 01:00）</li>
+                        <li>重试间隔建议 ≥500ms 避免触发反爬机制</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

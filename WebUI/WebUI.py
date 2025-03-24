@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from config_module.routes import config_bp
+from config_module.routes_config import config_bp
 
 app = Flask(__name__)
 app.register_blueprint(config_bp, url_prefix='/config')

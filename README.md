@@ -3,7 +3,7 @@
 
 
 <p align="center">
-    <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
+    <img src="https://img.shields.io/badge/version-1.4.1-blue.svg" alt="Version">
     <img src="https://img.shields.io/github/stars/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Stars">
     <img src="https://img.shields.io/github/issues/AuroBreeze/QFNUClassSelector?style=flat-square" alt="Issues">
     <img src="https://img.shields.io/badge/Python-3.12.3-blue.svg" alt="Python">

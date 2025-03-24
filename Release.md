@@ -1,4 +1,4 @@
-# ✨ QFNUClassSelector v1.4.0 Release ✨
+# ✨ QFNUClassSelector v1.4.1 Release ✨
 
 ## 📝 更新日志
 

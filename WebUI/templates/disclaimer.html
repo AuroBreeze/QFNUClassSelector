@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>免责声明 - QFNU选课系统</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .legal-section {border-left: 4px solid #dc3545; padding-left: 1.5rem; margin: 2rem 0}
+        .prohibition-list {columns: 2; margin-top: 1rem}
+        .legal-card {box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;}
+        .accordion-button:not(.collapsed) {background-color: #fff3cd;}
+        <style>
+            .legal-section {
+                transition: all 0.3s ease;
+                box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075)!important;
+            }
+            .legal-section:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0.5rem 1.5rem rgba(220,53,69,0.15)!important;
+            }
+            .table-striped>tbody>tr:nth-of-type(odd)>* {
+                --bs-table-accent-bg: rgba(220,53,69,0.05);
+            }
+            .back-button {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                box-shadow: 0 0.25rem 0.75rem rgba(220,53,69,0.3);
+            }
+        </style>
+    </style>
+</head>
+<body>
+    <div class="container py-4 animate__animated animate__fadeIn">
+        <div class="alert alert-danger shadow-lg">
+            <h1 class="mb-3 display-4 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>重要法律声明</h1>
+        </div>
+
+        <div class="legal-section shadow-sm p-4 rounded bg-white">
+            <h3 class="fw-bold mb-3"><i class="bi bi-file-earmark-text-fill me-2"></i>使用条款</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item">本工具仅供学习网络编程和自动化技术原理</li>
+                <li class="list-group-item">使用者需自行承担账号封禁等风险</li>
+                <li class="list-group-item">禁止用于商业用途或干扰教务系统</li>
+            </ol>
+        </div>
+
+        <div class="card border-danger mt-4 shadow">
+            <div class="card-header bg-danger text-white d-flex align-items-center">
+                <i class="bi bi-slash-circle-fill me-2"></i>
+                <h5 class="mb-0">严格禁止行为</h5>
+            </div>
+            <div class="card-body prohibition-list">
+                <ul class="list-unstyled">
+                    <li>• 出售或商业化使用</li>
+                    <li>• 发起DDoS攻击</li>
+                    <li>• 篡改系统数据</li>
+                    <li>• 干扰他人选课</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="alert alert-warning mt-4 shadow-sm">
+            <i class="bi bi-envelope-fill me-2"></i>联系开发者：1732373074@aliyun.com
+        </div>
+
+        <div class="accordion mb-4 shadow-sm">
+            <div class="accordion-item legal-card border-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#privacySection">
+                        🔒 数据隐私条款
+                    </button>
+                </h2>
+                <div id="privacySection" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">1. 本工具不会收集任何用户个人信息</li>
+                            <li class="list-group-item">2. 配置文件数据仅存储于本地设备</li>
+                            <li class="list-group-item">3. 网络请求日志将在24小时后自动清除</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card legal-card border-warning mb-4">
+            <div class="card-header bg-warning d-flex align-items-center">
+                <i class="bi bi-shield-exclamation me-2"></i>
+                <h5 class="mb-0">第三方责任声明</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">行为类型</th>
+                                <th scope="col">责任归属</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>账号共享使用</td>
+                                <td>由账号持有者自行承担风险</td>
+                            </tr>
+                            <tr>
+                                <td>修改软件源代码</td>
+                                <td>修改者承担全部法律责任</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+            <a href="/" class="btn btn-outline-danger back-button">
+                <i class="bi bi-arrow-left-circle me-2"></i>
+                返回选课界面
+            </a>
+        </div>
+    </div>
+</body>
+</html>

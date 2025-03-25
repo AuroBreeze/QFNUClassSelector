@@ -1,4 +1,7 @@
 import colorlog
+import os
+import sys
+import logging  # 新增导入logging模块
 
 class Log:
     def __init__(self, name="main", level="INFO"):
@@ -24,6 +27,14 @@ class Log:
                 'ERROR': 'red',
                 'CRITICAL': 'bold_red',
             })
+        
+        # 添加文件处理器
+        log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'WebUI', 'log')
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+        self.file_handler = logging.FileHandler(os.path.join(log_dir, 'app.log'))  # 修改日志文件名为固定的app.log
+        self.file_handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.file_handler)
 
     def main(self, level, message):
         message = str(message)

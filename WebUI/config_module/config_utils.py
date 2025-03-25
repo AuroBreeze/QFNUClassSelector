@@ -1,7 +1,7 @@
 import os
 import toml
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), '../config.toml')
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), '../../config.toml')
 
 # 初始化默认配置
 DEFAULT_CONFIG = {

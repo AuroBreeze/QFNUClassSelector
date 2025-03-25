@@ -41,6 +41,10 @@ class Log:
         )
         self.file_handler.setFormatter(self.file_formatter)
         self.logger.addHandler(self.file_handler)
+        
+        # 确保控制台处理器也被添加
+        self.handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.handler)
 
     def main(self, level, message):
         message = str(message)

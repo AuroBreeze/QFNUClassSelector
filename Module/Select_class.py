@@ -13,7 +13,7 @@ class Load_Source:  # 载入所有必须的资源
         self.Candidate = False
 
     def Get_Course_order(self):
-        with open("./config.toml", "r", encoding="utf-8") as f:
+        with open("../config.toml", "r", encoding="utf-8") as f:
             config = toml.load(f)
         self.curse_order = config["Plan"]["Course_order"]
         self.curse_name = config["Plan"]["Course_name"]
@@ -124,7 +124,7 @@ class Select_Class:
         count = 0
         while True:
             try:
-                with open("./failed_courses.json","r",encoding="utf-8") as f:
+                with open("../failed_courses.json","r",encoding="utf-8") as f:
                     self.Order_fail = json.load(f)
 
                 judge_json=False
@@ -274,7 +274,7 @@ class Select_Class:
             return False  # 如果所有列表为空，返回False
 
         try:
-            with open("./failed_courses.json", "w", encoding="utf-8") as f:
+            with open("../failed_courses.json", "w", encoding="utf-8") as f:
                 import json
                 json.dump(failed_courses, f, ensure_ascii=False, indent=4)
             self.log.main("INFO", "未选课成功的课程已保存到failed_courses.json文件中")
@@ -286,9 +286,9 @@ class Select_Class:
     def Check_failed_courses(self):
         try:
             judge_success = True
-            if  not os.path.exists("./failed_courses.json"):
+            if  not os.path.exists("../failed_courses.json"):
                 return True
-            with open("./failed_courses.json", "r", encoding="utf-8") as f:
+            with open("../failed_courses.json", "r", encoding="utf-8") as f:
                 import json
                 failed_courses = json.load(f)
                 for index, courses in failed_courses.items():

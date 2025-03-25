@@ -25,7 +25,7 @@ class Login:
         return code
 
     def Base_user(self):
-        with open("./config.toml","r",encoding="utf-8") as f:
+        with open("../config.toml","r",encoding="utf-8") as f:
             config = toml.load(f)
 
         user_account = config["Login"]["username"][0]

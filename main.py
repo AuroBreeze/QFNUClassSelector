@@ -30,10 +30,6 @@ class QFNUClassSelector:
         self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
     def MultiAccount(self):
         pass
-    
-    def webui_run(self):
-        from WebUI.WebUI import app  # 新增导入
-        app.run(debug=True)
 
 if __name__ == '__main__':
-    QFNUClassSelector().webui_run()
+    QFNUClassSelector().run()

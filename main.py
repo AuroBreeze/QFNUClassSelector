@@ -1,5 +1,10 @@
 from Module import Logging,Welcome,Session_inherit,Select_class,Timer
 import time
+import sys
+import os
+# 添加路径配置
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # 项目根目录
+sys.path.append(os.path.join(os.path.dirname(__file__), 'WebUI'))  # WebUI目录
 
 class QFNUClassSelector:
     def __init__(self):
@@ -25,6 +30,10 @@ class QFNUClassSelector:
         self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
     def MultiAccount(self):
         pass
+    
+    def webui_run(self):
+        from WebUI.WebUI import app  # 新增导入
+        app.run(debug=True)
 
 if __name__ == '__main__':
-    QFNUClassSelector().run()
+    QFNUClassSelector().webui_run()

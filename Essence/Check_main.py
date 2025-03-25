@@ -11,7 +11,9 @@ class main:
         self.log = Logging.Log("Check_Main")
         Welcome.main()
         #time.sleep(0.1)
-        judge = Check_toml.main().Return_bool()
+        # 修改此行，确保 Check_toml 类正确初始化
+        check_toml_instance = Check_toml.main()
+        judge = check_toml_instance.Return_bool()
         #print(judge)
         if judge:
             self.log.main("INFO", "配置文件检查通过")

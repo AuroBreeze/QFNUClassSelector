@@ -9,7 +9,7 @@ class main:
         self.log = Logging.Log("Check_config")
 
         try:
-            with open('./config.toml', 'r',encoding="utf-8") as f:
+            with open('../config.toml', 'r',encoding="utf-8") as f:
                 self.config = toml.load(f)
         except FileNotFoundError:
             self.log.main("ERROR", '未找到config.toml文件')

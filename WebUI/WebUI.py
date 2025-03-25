@@ -27,13 +27,20 @@ def run_check_config():
     from Check_main import main
     def generate():
         try:
-            for line in main():
-                yield f"data: {line}\n\n"
-                import time
-                time.sleep(1)  # 添加延迟以确保实时显示
-            yield "data: 配置文件检查通过\n\n"
+            check_instance = main()  # 实例化main类
+            if hasattr(check_instance, 'log'):  # 检查实例是否有log属性
+                log_messages = check_instance.log.get_messages()  # 获取日志信息
+                for message in log_messages:
+                    yield f"data: {message}\n\n"
+                    import time
+                    time.sleep(0.5)  # 缩短延迟时间以加快实时显示
+            else:
+                yield "data: 无法获取日志信息\n\n"
+            yield "data: 配置文件检查完成\n\n"
         except Exception as e:
             yield f"data: 检查过程中出现错误: {str(e)}\n\n"
+        finally:
+            yield "event: close\n\n"  # 添加关闭事件以确保前端知道流已结束
     return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':

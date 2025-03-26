@@ -1,9 +1,3 @@
-import sys
-import os
-# 添加路径配置
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # 项目根目录
-
-
 from Module import Logging,Welcome,Session_inherit,Select_class,Timer
 import time
 

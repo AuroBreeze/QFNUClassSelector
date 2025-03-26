@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>运行状态监控</h2>
+    <div class="mb-3">
+        <button id="startBtn" class="btn btn-primary" onclick="startRun()">开始运行</button>
+    </div>
+    <div id="status" class="alert alert-info">准备就绪</div>
+    <div class="card">
+        <div class="card-header">实时日志</div>
+        <div id="output" class="card-body log-container"></div>
+    </div>
+</div>
+
+<script>
+function startRun() {
+    const eventSource = new EventSource('/run/stream');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    document.getElementById('startBtn').disabled = true;
+
+    eventSource.onmessage = function(e) {
+        const newLine = document.createElement('div');
+        newLine.textContent = e.data.replace('data: ', '');
+        output.appendChild(newLine);
+        output.scrollTop = output.scrollHeight;
+    };
+
+    eventSource.addEventListener('close', function() {
+        eventSource.close();
+        status.innerHTML = '运行完成';
+        document.getElementById('startBtn').disabled = false;
+    });
+}
+</script>
+{% endblock %}

@@ -24,18 +24,6 @@
     <!-- 原运行模式配置区块前移 -->
     <!-- ======================== 原第41行左右开始 ======================== -->
         <div class="container mt-4">
-            <!-- 移除以下Jinja2模板代码 -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
             <h1 class="mb-4">QFNU 选课系统配置</h1>
     <form action="/config/disposition/update" method="POST">
             
@@ -281,6 +269,7 @@
             <!-- 提交按钮 -->
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">保存配置</button>
+                <a href="/" class="btn btn-secondary btn-lg ms-3">返回主界面</a>
             </div>
         </form>
     </div>

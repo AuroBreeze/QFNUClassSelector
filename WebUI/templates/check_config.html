@@ -46,8 +46,9 @@
 <body>
     <div class="container">
         <h1 class="mb-4">检查配置文件</h1>
-        <div>
+        <div class="d-flex gap-2 mb-4">
             <button onclick="startCheck()" class="btn btn-primary btn-lg">开始检查</button>
+            <a href="/" class="btn btn-secondary btn-lg">返回主界面</a>
         </div>
         <div class="status-box" id="status-box">
             <p class="text-muted">等待检查开始...</p>
@@ -63,7 +64,6 @@
                 $('#status-box').scrollTop($('#status-box')[0].scrollHeight);
             };
             eventSource.onerror = function(event) {
-                $('#status-box').append('<p class="text-danger">检查过程中出现错误：' + event.data + '</p>');
                 eventSource.close();
             };
         }

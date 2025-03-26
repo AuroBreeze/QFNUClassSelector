@@ -30,7 +30,7 @@ def run_check_config():
                     time.sleep(0.1)  # 适当的延迟以保证前端显示流畅
             yield "data: 配置文件检查完成\n\n"
         except Exception as e:
-            yield f"data: 检查过程中出现错误: {str(e)}\n\n"
-        finally:
-            yield "event: close\n\n"  # 添加关闭事件以确保前端知道流已结束
+            #yield f"data: 检查过程中出现错误: {str(e)}\n\n"  # 将错误信息传递给前端
+            #yield "event: close\n\n"  # 仅在发生错误时触发关闭事件
+            pass
     return Response(generate(), mimetype='text/event-stream')

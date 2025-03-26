@@ -28,7 +28,7 @@ def run_check_config():
                 print(log_file)
                 for line in log_file:
                     yield f"data: {line.strip()}\n\n"
-                    time.sleep(0.08)  # 适当的延迟以保证前端显示流畅
+                    time.sleep(0.05)  # 适当的延迟以保证前端显示流畅
             yield "data: 配置文件检查完成\n\n"
         except Exception as e:
             pass

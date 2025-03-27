@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template
 from config_module.routes_config import config_bp
 from check_module.routes_check import check_config_bp
 from run_module.routes_run import run_bp

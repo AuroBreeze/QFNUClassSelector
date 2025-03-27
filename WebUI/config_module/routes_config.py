@@ -59,22 +59,22 @@ def update_config():
             if request.form.get(f'teachers_unlimited_{course_count}'):
                 teachers_name.append([""])
             else:
-                teachers_name.append(teachers.split(',') if teachers else [])
-            
+                teachers_name.append([t.strip() for t in teachers.split(',') if t.strip()] if teachers else [])
+                
             if request.form.get(f'time_period_unlimited_{course_count}'):
                 time_period.append([""])
             else:
-                time_period.append(time_period_val.split(',') if time_period_val else [])
-            
+                time_period.append([t.strip() for t in time_period_val.split(',') if t.strip()] if time_period_val else [])
+                
             if request.form.get(f'week_day_unlimited_{course_count}'):
                 week_day.append([""])
             else:
-                week_day.append(week_day_val.split(',') if week_day_val else [])
-            
+                week_day.append([w.strip() for w in week_day_val.split(',') if w.strip()] if week_day_val else [])
+                
             if request.form.get(f'course_order_unlimited_{course_count}'):
                 course_order.append([""])
             else:
-                course_order.append(course_order_val.split(',') if course_order_val else [])
+                course_order.append([o.strip() for o in course_order_val.split(',') if o.strip()] if course_order_val else [])
     
         # 处理过滤条件
         config['Plan']['sfym'] = 'sfym' in request.form
@@ -106,7 +106,6 @@ def update_config():
         config['Plan']['Week_day'] = week_day
         config['Plan']['Course_order'] = course_order
     
-        # ... 原有update()函数的实现 ...
         save_config(config)
         return redirect(url_for('config.disposition'))
     except Exception as e:

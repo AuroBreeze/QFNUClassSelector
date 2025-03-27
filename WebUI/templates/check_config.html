@@ -62,7 +62,10 @@
             $('#status-box').html('<p class="text-info">开始检查配置文件...</p>');
             var eventSource = new EventSource('/check_config/run');
             eventSource.onmessage = function(event) {
-                $('#status-box').append('<p class="text-success">' + event.data + '</p>');
+                var message = event.data;
+                // 修改判断逻辑，确保包含 ERROR 时显示红色
+                var className = message.toUpperCase().includes('ERROR') ? 'text-danger' : 'text-success';
+                $('#status-box').append('<p class="' + className + '">' + message + '</p>');
                 $('#status-box').scrollTop($('#status-box')[0].scrollHeight);
             };
             eventSource.onerror = function(event) {

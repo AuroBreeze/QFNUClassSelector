@@ -1,22 +1,24 @@
-from flask import Blueprint, Response
-from ..Essence.main import QFNUClassSelector
+from flask import Blueprint, Response,render_template
+from .run_main import QFNUClassSelector
 import time
-
+from datetime import datetime
 run_bp = Blueprint('run', __name__, template_folder='../../templates')
 
 @run_bp.route('/')
 def run_interface():
     return render_template("run.html")
 
-@run_bp.route('/stream')
+@run_bp.route('/start')
 def run_stream():
     def generate():
         try:
             # 初始化主程序
             runner = QFNUClassSelector()
             
-            # 清空日志文件
-            log_path = "../log/runtime.log"
+            # 获取当前日期并构造日志文件路径
+            today = datetime.now().strftime('%Y-%m-%d')
+            log_path = f"./log/{today}_app.log"
+            
             open(log_path, 'w').close()
 
             # 启动运行线程

@@ -22,8 +22,6 @@ class main:
             time_2 = time.time()
             self.log.main("ERROR", "config.toml配置文件检查未通过")
             self.log.main("INFO", "用时："+str(time_2-time_1)+"秒")
-            self.log.main("ERROR", "按任意键退出...")
-            input()
-            exit()
+
 if __name__ == '__main__':
     main()

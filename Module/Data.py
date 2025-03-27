@@ -46,7 +46,7 @@ class Fixed_Data:
         # 辅修选课 http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/comeInFxzyxk 查询请求：http://zhjw.qfnu.edu.cn/jsxsd/xsxkkc/xsxkFxxk?
 
         try:
-            with open("../params.json","r",encoding="utf-8") as f:
+            with open("./params.json","r",encoding="utf-8") as f:
                 self.config_json = json.load(f) # 载入构建好的params文件
         except:
             self.log.main("ERROR", "Fixed_Data: 读取配置文件(params.json)失败")

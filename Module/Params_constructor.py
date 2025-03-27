@@ -8,7 +8,7 @@ class ParamsConstructor:
         self.log = Logging.Log("Params_constructor")
         try:
             # 从config.toml文件中读取配置
-            self.config = toml.load("../config.toml")
+            self.config = toml.load("./config.toml")
         except Exception as e:
             self.log.main("ERROR","config.toml文件读取失败，请检查文件路径或格式是否正确")
             self.log.main("ERROR","退出程序")
@@ -79,7 +79,7 @@ class ParamsConstructor:
         
         return params_dict
 
-    def write_to_json(self, file_path="../params.json"):
+    def write_to_json(self, file_path="./params.json"):
         try:
             params_dict = self.generate_params()
             with open(file_path, 'w', encoding='utf-8') as f:

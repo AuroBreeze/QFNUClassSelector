@@ -15,7 +15,7 @@ def run_check_config():
         try:
             # 获取当前日期并构造日志文件路径
             today = datetime.now().strftime('%Y-%m-%d')
-            log_file_path = f"../log/{today}_app.log"
+            log_file_path = f"./log/{today}_app.log"
             
             # 清空日志文件
             open(log_file_path, 'w').close()

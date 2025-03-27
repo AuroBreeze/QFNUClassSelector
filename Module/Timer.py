@@ -5,7 +5,7 @@ from Module import Logging
 class Timer: # 定时任务类，执行定时任务的时间计时逻辑
     def __init__(self):
         self.log = Logging.Log("Timer")
-        with open("../config.toml","r",encoding="utf-8") as f:
+        with open("./config.toml","r",encoding="utf-8") as f:
             self.config = toml.load(f)
         self.start_time = self.config["Time"]["Start_time"]
         self.end_time = self.config["Time"]["End_time"]

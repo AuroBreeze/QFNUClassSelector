@@ -41,6 +41,8 @@ QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲�
 
 ## 📝 使用说明
 
+[开始使用](./Essay/md/Start.md)
+
 ### 🖥️ WebUI 使用
 ```
 # 启动可视化配置界面
@@ -74,14 +76,6 @@ python WebUI/WebUI.py
 
 5. 开发者对使用本脚本造成的任何直接或间接损失不承担任何责任。
 
-
-## 安装步骤
-1. 确保已安装`Python 3.6<=version<=3.12`版本。
-2. 克隆项目到本地：
-   ```bash
-   git clone https://github.com/AuroBreze/QFNUClassSelector.git
-   cd QFNUClassSelector
-   ```
 ## 配置文件说明
 `config.toml`文件的配置项说明：
 

@@ -28,6 +28,24 @@
             height: 400px;
             overflow-y: auto;
         }
+        .card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #343a40;
+        }
+        .card-text {
+            font-size: 0.95rem;
+            color: #dc3545;
+        }
         .status-box p {
             margin: 0.5rem 0;
             font-size: 1rem;
@@ -97,10 +115,10 @@
                     if (data.hasOwnProperty(key)) {
                         var courses = data[key].join(', ');
                         failedCoursesList.append(`
-                            <div class="card mb-2">
+                            <div class="card mb-3">
                                 <div class="card-body">
                                     <h5 class="card-title">时间段 ${key}</h5>
-                                    <p class="card-text text-danger">${courses}</p>
+                                    <p class="card-text">${courses}</p>
                                 </div>
                             </div>
                         `);

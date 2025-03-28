@@ -11,7 +11,7 @@
             padding: 2rem;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         .btn-run:hover {
@@ -25,8 +25,8 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-top: 1rem;
-            height: 400px; /* 设置固定高度 */
-            overflow-y: auto; /* 添加垂直滚动条 */
+            height: 400px;
+            overflow-y: auto;
         }
         .status-box p {
             margin: 0.5rem 0;
@@ -42,6 +42,13 @@
         .text-info {
             color: #17a2b8;
         }
+        .row {
+            display: flex;
+            gap: 1rem;
+        }
+        .col {
+            flex: 1;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -52,8 +59,18 @@
             <button onclick="startRun()" class="btn btn-primary btn-lg btn-run">开始运行</button>
             <a href="/" class="btn btn-secondary btn-lg">返回主界面</a>
         </div>
-        <div class="status-box" id="status-box">
-            <p class="text-muted">等待程序开始运行...</p>
+        <div class="row">
+            <div class="col">
+                <div class="status-box" id="status-box">
+                    <p class="text-muted">等待程序开始运行...</p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="status-box" id="failed-courses-box">
+                    <h4 class="mb-3">失败课程</h4>
+                    <div id="failed-courses-list"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -63,7 +80,6 @@
             var eventSource = new EventSource('/run/start');
             eventSource.onmessage = function(event) {
                 var message = event.data;
-                // 修改判断逻辑，确保包含 ERROR 时显示红色
                 var className = message.toUpperCase().includes('ERROR') ? 'text-danger' : 'text-success';
                 $('#status-box').append('<p class="' + className + '">' + message + '</p>');
                 $('#status-box').scrollTop($('#status-box')[0].scrollHeight);
@@ -72,6 +88,26 @@
                 eventSource.close();
             };
         }
+
+        $(document).ready(function() {
+            $.getJSON('/run/failed_courses', function(data) {
+                var failedCoursesList = $('#failed-courses-list');
+                failedCoursesList.empty();
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        var courses = data[key].join(', ');
+                        failedCoursesList.append(`
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">时间段 ${key}</h5>
+                                    <p class="card-text text-danger">${courses}</p>
+                                </div>
+                            </div>
+                        `);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

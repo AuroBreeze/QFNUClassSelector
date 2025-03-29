@@ -436,5 +436,25 @@
             toggleAddAccount();
         });
     </script>
+    <script>
+        // 新增保存成功提示
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault(); // 阻止默认提交行为
+            fetch(this.action, {
+                method: this.method,
+                body: new FormData(this)
+            }).then(response => {
+                if (response.ok) {
+                    alert('配置保存成功！');
+                    window.location.href = '/config/disposition'; // 保存成功后跳转到主界面
+                } else {
+                    alert('配置保存失败，请重试！');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('配置保存失败，请重试！');
+            });
+        });
+    </script>
 </body>
 </html>

@@ -436,6 +436,7 @@
             toggleAddAccount();
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // 新增保存成功提示
         document.querySelector('form').addEventListener('submit', function(event) {
@@ -445,14 +446,30 @@
                 body: new FormData(this)
             }).then(response => {
                 if (response.ok) {
-                    alert('配置保存成功！');
-                    window.location.href = '/config/disposition'; // 保存成功后跳转到主界面
+                    Swal.fire({
+                        icon: 'success',
+                        title: '配置保存成功！',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '/config/disposition'; // 保存成功后跳转到主界面
+                    });
                 } else {
-                    alert('配置保存失败，请重试！');
+                    Swal.fire({
+                        icon: 'error',
+                        title: '配置保存失败',
+                        text: '请重试！',
+                        confirmButtonText: '确定'
+                    });
                 }
             }).catch(error => {
                 console.error('Error:', error);
-                alert('配置保存失败，请重试！');
+                Swal.fire({
+                    icon: 'error',
+                    title: '配置保存失败',
+                    text: '请重试！',
+                    confirmButtonText: '确定'
+                });
             });
         });
     </script>

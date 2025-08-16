@@ -155,15 +155,15 @@ class main:
 
     def check_time_section(self):
         # 检查Start_time和End_time的时间格式是否正确
-        time_format = re.compile(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$')
+        time_format = re.compile(r'^([01]\d|2[0-3]):([0-5]\d)(:([0-5]\d))?$')  # 支持HH:MM或HH:MM:SS
         start_time = self.config['Time'].get('Start_time')
         end_time = self.config['Time'].get('End_time')
 
-        if not time_format.match(start_time):
-            self.log.main("ERROR", 'config.toml文件中Start_time格式不正确，应为HH:MM')
+        if not isinstance(start_time, str) or not time_format.match(start_time.strip()):
+            self.log.main("ERROR", 'config.toml文件中Start_time格式不正确，应为HH:MM或HH:MM:SS')
             self.bool = False
-        if not time_format.match(end_time):
-            self.log.main("ERROR", 'config.toml文件中End_time格式不正确，应为HH:MM')
+        if not isinstance(end_time, str) or not time_format.match(end_time.strip()):
+            self.log.main("ERROR", 'config.toml文件中End_time格式不正确，应为HH:MM或HH:MM:SS')
             self.bool = False
     def Return_bool(self):
         self.check_config()

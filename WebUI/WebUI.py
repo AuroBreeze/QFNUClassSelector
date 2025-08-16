@@ -4,6 +4,8 @@ from check_module.routes_check import check_config_bp
 from run_module.routes_run import run_bp
 
 app = Flask(__name__)
+app.logger.handlers = []
+app.logger.propagate = False
 app.register_blueprint(config_bp, url_prefix='/config')
 # 修正蓝图的 URL 前缀，确保与访问路径一致
 app.register_blueprint(check_config_bp, url_prefix='/check_config')
@@ -22,4 +24,4 @@ def disclaimer():
     return render_template('./disclaimer.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

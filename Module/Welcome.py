@@ -1,7 +1,21 @@
 from Module import Logging
+import threading
 
 class main:
+    _instance = None
+    _initialized = False
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
         self.log = Logging.Log("Welcome")
         self.log.main("INFO", "欢迎使用选课小助手")
         self.log.main("INFO", "Author: AuroBreeze")

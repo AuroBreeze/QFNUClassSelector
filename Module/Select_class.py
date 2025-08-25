@@ -192,6 +192,8 @@ class Select_Class:
                         judge = self.Json_Process(json_data)
 
                         if judge:
+                            self.log.main("DEBUG", f"{name}课程查询到数据")
+                            self.log.main("DEBUG", f"{json_data}")
                             judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
                                                                      self.jx02id_get).main()
                             if judge_submit:

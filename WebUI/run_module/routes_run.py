@@ -22,6 +22,9 @@ def run_stream():
             today = datetime.now().strftime('%Y-%m-%d')
             log_path = f"./log/{today}_app.log"
             
+            # 确保日志目录存在
+            os.makedirs('log', exist_ok=True)
+
             open(log_path, 'w').close()
 
             # 启动运行线程

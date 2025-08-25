@@ -118,6 +118,7 @@ class Select_Class:
                 self.Save_Failed_Courses_To_Json()
             else:#存在失败的课程
                 self.log.main("INFO", "❌蹲课模式运行中......")
+                time.sleep(5)
                 self.failed_order(self.Order_list_fail)
 
     def failed_order(self,config):#候选选课
@@ -162,7 +163,7 @@ class Select_Class:
                         if judge_submit:
                             break
                         else:
-                            self.log.main("WARN", f"⚠️ {name}选课失败")
+                            self.log.main("WARN", f"⚠️ {name}选课失败，程序选课所在页面{self.name_url[index]}，选课网址:{self.url_list[index]} ")
                             self.Order_list_fail[str(index)].append(name)
 
                     except Exception as e:
@@ -202,7 +203,7 @@ class Select_Class:
                     if judge_submit:
                         break
                     else:
-                        self.log.main("WARN", f"⚠️ {name}选课失败")
+                        self.log.main("WARN", f"⚠️ {name}选课失败，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
                         self.Order_list_fail[str(index)].append(name)
 
                 except Exception as e:
@@ -242,7 +243,7 @@ class Select_Class:
                         if judge_submit:
                             break
                         else:
-                            self.log.main("WARN", f"⚠️ {name}选课失败")
+                            self.log.main("WARN", f"⚠️ {name}选课失败，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
                             self.Order_list_fail[str(index)].append(name)
                     except Exception as e:
                         self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")

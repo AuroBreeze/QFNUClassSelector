@@ -254,7 +254,7 @@ class Select_Class:
         try:
             Data = json_data["aaData"][0]
             self.jx0404id = str(Data["jx0404id"])
-            self.jx02id = str(Data["jx02id"])
+            self.jx02id_get = str(Data["jx02id"])
             return True
         except:
             self.log.main("DEBUG","🔍 未查询到所选课程")

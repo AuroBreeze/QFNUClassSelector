@@ -1,4 +1,4 @@
-from Module import Logging,Welcome,Session_inherit,Select_class,Timer
+from Module import Logging,Welcome,Session_inherit,Select_class,Timer,Params_constructor
 import time
 
 
@@ -19,6 +19,9 @@ class QFNUClassSelector:
 
         index = 0
         session  = Session_inherit.Session_Inherit(index).Return_Session()
+        params = Params_constructor.ParamsConstructor().write_to_json()
+        
+        
 
         Select_class.Select_Class(session).run()
 

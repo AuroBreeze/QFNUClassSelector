@@ -43,13 +43,49 @@ QFNUClassSelector 是一个使用Python实现的抢课脚本，专门针对曲�
 
 [开始使用](./Essay/md/Start.md)
 
+### 🧰 环境与安装
+```
+python -m venv .venv
+.venv\\Scripts\\pip install -r requirements.txt
+```
+
 ### 🖥️ WebUI 使用
 ```
 # 启动可视化配置界面
 python WebUI/WebUI.py
 
-# 访问 http://localhost:5000 进行配置
+# 打开浏览器访问
+http://localhost:5000
 ```
+
+- 配置入口：`/config/disposition`
+- 配置检查：`/check_config`（SSE 实时日志）
+- 启动运行：`/run`（SSE 实时日志 + 失败课程查询）
+
+### 🧪 命令行运行（Essence / WebUI Runner）
+两种入口代码均支持同一套配置与日志：
+
+```
+# 直接运行 Essence 版本
+python Essence/main.py
+
+# 运行 WebUI 的 Runner（不启 WebUI，仅走同样逻辑与日志流）
+python WebUI/run_module/run_main.py
+```
+
+注意：两者都会遵循 `Timer.Timer().run()` 的时间窗（`[Time]` 中的 `Start_time`/`End_time`）。
+
+### ⚙️ 生成检索参数（params.json）
+运行前建议先检查配置并生成参数文件：
+
+```
+# 单独检查配置并生成 params.json
+python WebUI/check_module/Check_main.py
+
+# 或直接在 WebUI 的“配置检查”页面执行
+```
+
+生成的 `params.json` 将被 `Module/Data.py` 读取作为查询参数源。
 
 
 ## 📝 免责声明

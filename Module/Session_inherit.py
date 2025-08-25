@@ -36,10 +36,13 @@ class Session_Inherit:
                 fragment = soup.select("#jrxk")[0]["href"]
                 url_2 = "http://zhjw.qfnu.edu.cn" + fragment
                 res = self.session.get(url=url_2).text
+                #print(url_2)
+
 
                 num = re.findall("/jsxsd/xsxk/xklc_view(.*?)=(.*)", fragment)
                 url_3 = f"http://zhjw.qfnu.edu.cn/jsxsd/xsxk/xsxk_index?jx0502zbid={num[0][1]}"
                 res = self.session.get(url=url_3).text
+                #print(url_3)
 
                 soup = BeautifulSoup(res, "lxml")
                 list = soup.select("#topmenu  li")
@@ -48,7 +51,9 @@ class Session_Inherit:
                     self.url_list.append(url)
                     # print(i.a.string + " " + url)
                 # print("session继承成功")
+                #print(self.url_list)
                 self.log.main("INFO", "session继承成功")
+                return True
             except Exception as e:
                 self.log.main("DEBUG", f"session继承失败，原因：{e}")
                 self.log.main("DEBUG", f"第{count + 1}次,间隔：{self.config['retry_time']/1000}秒,正在尝试重新继承session......")

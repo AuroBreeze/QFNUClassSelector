@@ -13,14 +13,14 @@ class QFNUClassSelector:
         # Check_toml.main().Return_bool()
         self.log.main("INFO", "QFNUClassSelector started")
 
-        # if Timer.Timer().run() == False:
-        #     self.log.main("INFO", "程序正在退出")
-        #     time_end = time.time()
-        #     self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
-        #     return
-        # index = 0
-        # session  = Session_inherit.Session_Inherit(index).Return_Session()
-        session = None
+        if Timer.Timer().run() == False:
+            self.log.main("INFO", "程序正在退出")
+            time_end = time.time()
+            self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")
+            return
+        index = 0
+        session  = Session_inherit.Session_Inherit(index).Return_Session()
+        # session = None
 
         Select_class.Select_Class(session).run()
 

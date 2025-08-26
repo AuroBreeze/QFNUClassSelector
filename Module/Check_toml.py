@@ -110,18 +110,20 @@ class main:
             self.log.main("ERROR", 'config.toml文件中Plan部分Multiple_account的子列表数量与Course_name不匹配')
             self.bool = False
 
-        # 检查Time_period中的每个子列表是否包含2到3个元素，且每个元素是否为字符串
+        # 检查Time_period中的每个子列表是否包含合法元素；允许空列表或包含空字符串作为“不限”
         valid_time_periods = ['1-2-', '3-4-', '5-6-', '7-8-', '9-10-11', '12-13-']
         for period in time_period:
             if not isinstance(period, list):
                 self.log.main("ERROR", 'config.toml文件中Time_period中的每个子列表必须为列表类型')
                 self.bool = False
                 continue
-            if period:  # 允许子列表为空
-                for item in period:
-                    if not isinstance(item, str) or item not in valid_time_periods:
-                        self.log.main("ERROR", f'config.toml文件中Time_period中的元素必须为字符串类型且值在{valid_time_periods}中')
-                        self.bool = False
+            # 允许子列表为空；若有元素，允许其中包含空字符串代表“不限”
+            for item in period:
+                if item == "":
+                    continue
+                if not isinstance(item, str) or item not in valid_time_periods:
+                    self.log.main("ERROR", f'config.toml文件中Time_period中的元素必须为字符串类型且值在{valid_time_periods}中，或留空("\"") 表示不限')
+                    self.bool = False
 
         # 检查Week_day中的每个子列表是否包含1到7个元素，且每个元素是否为字符串且值在1到7之间
         for day in week_day:
@@ -129,11 +131,26 @@ class main:
                 self.log.main("ERROR", 'config.toml文件中Week_day中的每个子列表必须为列表类型')
                 self.bool = False
                 continue
-            if day:  # 允许子列表为空
-                for item in day:
-                    if not isinstance(item, str) or not item.isdigit() or int(item) < 1 or int(item) > 7:
-                        self.log.main("ERROR", 'config.toml文件中Week_day中的每个元素必须为字符串类型且值在1到7之间')
-                        self.bool = False
+            # 允许子列表为空；若有元素，允许其中包含空字符串代表“不限”
+            for item in day:
+                if item == "":
+                    continue
+                if not isinstance(item, str) or not item.isdigit() or int(item) < 1 or int(item) > 7:
+                    self.log.main("ERROR", 'config.toml文件中Week_day中的每个元素必须为字符串类型且值在1到7之间，或留空("\"") 表示不限')
+                    self.bool = False
+
+        # 检查Teachers_name，允许每个子列表为空或包含空字符串，非空元素需为字符串
+        for tlist in teachers_name:
+            if not isinstance(tlist, list):
+                self.log.main("ERROR", 'config.toml文件中Teachers_name中的每个子列表必须为列表类型')
+                self.bool = False
+                continue
+            for item in tlist:
+                if item == "":
+                    continue
+                if not isinstance(item, str):
+                    self.log.main("ERROR", 'config.toml文件中Teachers_name中的元素必须为字符串，或留空("\"") 表示不限')
+                    self.bool = False
 
         # 新增对Course_order的检查
         course_order = self.config.get('Plan', {}).get('Course_order', [])

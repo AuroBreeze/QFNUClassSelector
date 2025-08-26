@@ -19,7 +19,6 @@ class QFNUClassSelector:
 
         index = 0
         session  = Session_inherit.Session_Inherit(index).Return_Session()
-        params = Params_constructor.ParamsConstructor().write_to_json()
         
         
 

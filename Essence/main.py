@@ -34,7 +34,7 @@ class QFNUClassSelector:
             Select_class.Select_Class(session).run()
         except Exception as e:
             self.log.main("ERROR", f"选课流程异常：{e}")
-            return
+            pass
 
         time_end = time.time()
         self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")

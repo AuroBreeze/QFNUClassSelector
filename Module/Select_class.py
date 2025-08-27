@@ -163,7 +163,11 @@ class Select_Class:
                         self.default_order()  # 默认选课顺序
                         continue
                     self.plan_order(self.Order_list[i])  # 已设置的选课顺序
-                self.Save_Failed_Courses_To_Json()
+                generated = self.Save_Failed_Courses_To_Json()
+                # 如果本轮没有失败（不生成失败列表文件），则结束主循环，避免无限正常模式循环
+                if not generated:
+                    self.log.main("INFO", "✅ 本轮没有失败项，结束运行")
+                    break
             else:#存在失败的课程
                 self.log.main("INFO", "❌蹲课模式运行中......")
                 time.sleep(5)
@@ -270,8 +274,8 @@ class Select_Class:
                     self.log.main("ERROR", f"❌ {self.name_url[index]}请求失败:{self.url_list[index]}")
                     self.log.main("ERROR", f"❌ 失败原因：{e}")
                     self.Order_list_fail[str(index)].append(name)
-        # 重新载入选课列表
-        self.url_list = self._da.get_urls()
+        # 重新载入选课列表（避免使用未定义的 self._da）
+        self.url_list = Load_Source().Return_Data("URL")
 
 
     def plan_order(self, Order_list):
@@ -351,6 +355,13 @@ class Select_Class:
                 is_empty = False  # 如果有非空列表，标记为False
 
         if is_empty:
+            # 若此前存在失败列表文件，删除之，保持语义一致：本轮全部成功 => 无失败列表
+            try:
+                if os.path.exists("./failed_courses.json"):
+                    os.remove("./failed_courses.json")
+            except Exception:
+                pass
+            self.log.main("INFO", "✅ 全部课程选择成功，本轮未生成失败列表")
             return False  # 如果所有列表为空，返回False
 
         try:

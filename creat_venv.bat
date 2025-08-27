@@ -5,3 +5,5 @@ call .venv\Scripts\activate
 echo "安装依赖"
 pip install -r requirements.txt
 pip install -e .
+echo "完成"
+pause

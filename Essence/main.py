@@ -1,6 +1,7 @@
 from Module import Logging,Welcome,Session_inherit,Select_class,Params_constructor
 from Module.ConfigService import ConfigService
 import time
+import asyncio
 
 
 class QFNUClassSelector:
@@ -30,11 +31,16 @@ class QFNUClassSelector:
         Params_constructor.ParamsConstructor().write_to_json(file_path=params_path)
         
         
-        try:
-            Select_class.Select_Class(session).run()
-        except Exception as e:
-            self.log.main("ERROR", f"选课流程异常：{e}")
-            pass
+        async def _run_async_flow():
+            try:
+                await Select_class.Select_Class(session).run()
+            except Exception as e:
+                self.log.main("ERROR", f"选课流程异常：{e}")
+                # 不再抛出，保证统计耗时与退出
+                return
+
+        # 运行异步流程
+        asyncio.run(_run_async_flow())
 
         time_end = time.time()
         self.log.main("INFO", f"程序运行耗时: {time_end - time_start}s")

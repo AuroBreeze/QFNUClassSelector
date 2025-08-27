@@ -3,6 +3,7 @@ from Module.NetUtils import NetUtils
 import time
 import os
 import json
+import asyncio
 from Module.ConfigService import ConfigService
 from Module.DataAccess import DataAccess 
 
@@ -103,6 +104,9 @@ class Select_Class:
         self.session = session  # 继承session数据
         self.log = Logging.Log("Select_Class")
         self.request_timeout = ConfigService().get_value("Time","request_timeout_sec",10)
+        # 并发上限（默认 8）
+        self.max_concurrency = ConfigService().get_value("Async", "max_concurrency", 8)
+        self._sema = asyncio.Semaphore(self.max_concurrency)
 
         self.Order_list = Load_Source().Return_Data("Order")  # 载入设置的选课顺序列表
         
@@ -128,12 +132,12 @@ class Select_Class:
         # 标记最近一次查询是否命中空 aaData（页面无该课程）
         self._aa_empty = False
 
-    def Get_Json_data(self, index, params, data):  # 发送请求包，获取课程数据
+    async def Get_Json_data(self, index, params, data):  # 发送请求包，获取课程数据（异步）
         try:
             # 预热 GET（很多场景服务端记录上一次访问）
-            _, _ = NetUtils().request_with_retry(self.session, "GET", self.url_list[index], params=params, timeout=self.request_timeout)
+            _, _ = await NetUtils().request_with_retry_async(self.session, "GET", self.url_list[index], params=params, timeout=self.request_timeout)
             # 主请求 POST
-            resp, err = NetUtils().request_with_retry(self.session, "POST", self.url_list[index], params=params, data=data, timeout=self.request_timeout)
+            resp, err = await NetUtils().request_with_retry_async(self.session, "POST", self.url_list[index], params=params, data=data, timeout=self.request_timeout)
             if err is not None and err not in ("ok",):
                 self.log.main("DEBUG", f"课程查询失败: {err}")
                 return {}
@@ -153,27 +157,32 @@ class Select_Class:
             self.log.main("ERROR", f"获取课程数据失败: {e}")
             return {}
 
-    def run(self):
+    async def _bounded_get(self, index, params):
+        """在并发信号量保护下发起查询"""
+        async with self._sema:
+            return await self.Get_Json_data(index=index, params=params, data=self.data)
+
+    async def run(self):
         while True:
             if self.Check_failed_courses()==True:
                 self.log.main("INFO", "✅ 抢课模式运行中......")
-                #执行正常抢课
+                # 执行正常抢课
                 for i in range(len(self.Order_list)):
                     if self.Order_list[i] == []:
-                        self.default_order()  # 默认选课顺序
+                        await self.default_order()  # 默认选课顺序
                         continue
-                    self.plan_order(self.Order_list[i])  # 已设置的选课顺序
+                    await self.plan_order(self.Order_list[i])  # 已设置的选课顺序
                 generated = self.Save_Failed_Courses_To_Json()
                 # 如果本轮没有失败（不生成失败列表文件），则结束主循环，避免无限正常模式循环
                 if not generated:
                     self.log.main("INFO", "✅ 本轮没有失败项，结束运行")
                     break
-            else:#存在失败的课程
+            else:  # 存在失败的课程
                 self.log.main("INFO", "❌蹲课模式运行中......")
-                time.sleep(5)
-                self.failed_order(self.Order_list_fail)
+                await asyncio.sleep(5)
+                await self.failed_order(self.Order_list_fail)
 
-    def failed_order(self,config):#候选选课
+    async def failed_order(self,config):#候选选课（异步）
         count = 0
         while True:
             try:
@@ -197,28 +206,33 @@ class Select_Class:
                     try:
                         judge_submit = False
                         total = len(self.params[name])
+                        tasks = []
                         for p_idx, name_params in enumerate(self.params[name], start=1):
                             self.log.main("DEBUG", f"🔁 [{self.name_url[index]}] 课程“{name}” 使用第 {p_idx}/{total} 个参数进行查询")
-                            json_data = self.Get_Json_data(
-                                index=index, params=name_params, data=self.data
-                            )
-                            judge = self.Json_Process(json_data)
+                            tasks.append(asyncio.create_task(self._bounded_get(index, name_params)))
 
+                        aa_empty_seen = False
+                        for t in asyncio.as_completed(tasks):
+                            json_data = await t
+                            judge, aa_empty = self.Json_Process(json_data)
+                            aa_empty_seen = aa_empty_seen or aa_empty
                             if judge:
-                                judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
-                                                                     self.jx02id_get).main()
+                                judge_submit = await asyncio.to_thread(Submit_ClassSelection(self.session, self.jx0404id,
+                                                                                             self.jx02id_get).main)
                                 if judge_submit:
                                     self.log.main("INFO",
                                                   f"✅ {name}选课成功，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
+                                    # 取消剩余任务
+                                    for other in tasks:
+                                        if not other.done():
+                                            other.cancel()
                                     if name in self.course_name:
                                         self.course_name.remove(name)
                                     break
-                            else:
-                                pass
                         if judge_submit:
                             break
                         else:
-                            if self._aa_empty:
+                            if aa_empty_seen:
                                 self.log.main("INFO", f"ℹ️ {self.name_url[index]} 无该课程“{name}”，已跳过失败记录")
                             else:
                                 self.log.main("WARN", f"⚠️ {name}选课失败，程序选课所在页面{self.name_url[index]}，选课网址:{self.url_list[index]} ")
@@ -235,36 +249,41 @@ class Select_Class:
 
             count+=1
             self.log.main("INFO", f"✅ 蹲课模式运行中,等待总时间：{count * self.sleep_time}秒,间隔时间为:{self.sleep_time}秒")
-            time.sleep(self.sleep_time)
+            await asyncio.sleep(self.sleep_time)
 
 
-    def default_order(self):
+    async def default_order(self):
         for name in list(self.course_name):
             for index in range(len(self.url_list)):
                 try:
                     judge_submit = False
                     total = len(self.params[name])
+                    tasks = []
                     for p_idx, name_params in enumerate(self.params[name], start=1):
                         self.log.main("DEBUG", f"🔁 [{self.name_url[index]}] 课程“{name}” 使用第 {p_idx}/{total} 个参数进行查询")
-                        json_data = self.Get_Json_data(
-                                index=index, params=name_params, data=self.data
-                            )
-                        judge = self.Json_Process(json_data)
+                        tasks.append(asyncio.create_task(self._bounded_get(index, name_params)))
 
+                    aa_empty_seen = False
+                    for t in asyncio.as_completed(tasks):
+                        json_data = await t
+                        judge, aa_empty = self.Json_Process(json_data)
+                        aa_empty_seen = aa_empty_seen or aa_empty
                         if judge:
-                            judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
-                                                                     self.jx02id_get).main()
+                            judge_submit = await asyncio.to_thread(Submit_ClassSelection(self.session, self.jx0404id,
+                                                                                         self.jx02id_get).main)
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
+                                # 取消剩余任务
+                                for other in tasks:
+                                    if not other.done():
+                                        other.cancel()
                                 if name in self.course_name:
                                     self.course_name.remove(name)
                                 break
-                        else:
-                            pass
                     if judge_submit:
                         break
                     else:
-                        if self._aa_empty:
+                        if aa_empty_seen:
                             self.log.main("INFO", f"ℹ️ {self.name_url[index]} 无该课程“{name}”，已跳过失败记录")
                         else:
                             self.log.main("WARN", f"⚠️ {name}选课失败，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
@@ -278,10 +297,10 @@ class Select_Class:
         self.url_list = Load_Source().Return_Data("URL")
 
 
-    def plan_order(self, Order_list):
+    async def plan_order(self, Order_list):
         for index in Order_list:
             if index == "":
-                self.default_order()
+                await self.default_order()
                 continue
             else:
                 index = int(index)
@@ -290,27 +309,32 @@ class Select_Class:
                     try:
                         judge_submit = False
                         total = len(self.params[name])
+                        tasks = []
                         for p_idx, name_params in enumerate(self.params[name], start=1):
                             self.log.main("DEBUG", f"🔁 [{self.name_url[index]}] 课程“{name}” 使用第 {p_idx}/{total} 个参数进行查询")
-                            json_data = self.Get_Json_data(
-                                index=index, params=name_params, data=self.data
-                            )
-                            judge = self.Json_Process(json_data)
+                            tasks.append(asyncio.create_task(self._bounded_get(index, name_params)))
 
+                        aa_empty_seen = False
+                        for t in asyncio.as_completed(tasks):
+                            json_data = await t
+                            judge, aa_empty = self.Json_Process(json_data)
+                            aa_empty_seen = aa_empty_seen or aa_empty
                             if judge:
-                                judge_submit = Submit_ClassSelection(self.session, self.jx0404id,
-                                                                     self.jx02id_get).main()
+                                judge_submit = await asyncio.to_thread(Submit_ClassSelection(self.session, self.jx0404id,
+                                                                                             self.jx02id_get).main)
                                 if judge_submit:
                                     self.log.main("INFO", f"✅ {name}选课成功")
+                                    # 取消剩余任务
+                                    for other in tasks:
+                                        if not other.done():
+                                            other.cancel()
                                     if name in self.course_name:
                                         self.course_name.remove(name)
                                     break
-                            else:
-                                pass
                         if judge_submit:
                             break
                         else:
-                            if self._aa_empty:
+                            if aa_empty_seen:
                                 self.log.main("INFO", f"ℹ️ {self.name_url[index]} 无该课程“{name}”，已跳过失败记录")
                             else:
                                 self.log.main("WARN", f"⚠️ {name}选课失败，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
@@ -320,29 +344,30 @@ class Select_Class:
                         self.log.main("ERROR", f"❌ 失败原因：{e}")
                         self.Order_list_fail[str(index)].append(name)
 
-    def Json_Process(self,json_data) -> bool:
+    def Json_Process(self,json_data):
         """解析课程查询结果
-        返回 True: 命中课程，可继续提交
-        返回 False: 未命中课程；若 aaData 为空，则标记页面无此课程，用于不加入失败列表
+        返回 (judge, aa_empty)
+        judge=True: 命中课程，可继续提交
+        judge=False 且 aa_empty=True: 页面无此课程（不计入失败）
+        judge=False 且 aa_empty=False: 未命中但页面存在（计入失败）
         """
-        self._aa_empty = False
+        aa_empty_flag = False
         try:
             if isinstance(json_data, dict) and "aaData" in json_data:
                 aa = json_data.get("aaData", [])
                 if isinstance(aa, list) and len(aa) == 0:
-                    # 页面无此课程，标记以便调用方不加入失败列表
-                    self._aa_empty = True
+                    aa_empty_flag = True
                     self.log.main("DEBUG", "🔍 aaData 为空：该页面无此课程")
-                    return False
+                    return False, True
                 Data = aa[0]
                 self.jx0404id = str(Data["jx0404id"])
                 self.jx02id_get = str(Data["jx02id"])
-                return True
+                return True, False
         except Exception:
             pass
         self.log.main("DEBUG","🔍 未查询到所选课程（非空aaData或结构异常）")
         self.log.main("DEBUG",f"🔍 json数据:{json_data}")
-        return False
+        return False, aa_empty_flag
 
     def Save_Failed_Courses_To_Json(self):
         """将未选课成功的结果保存到json文件中"""

@@ -1,8 +1,10 @@
 import time
 import random
 from typing import Optional, Dict, Any, Iterable, Tuple
+import asyncio
 
 import requests
+import httpx
 from Module import Logging
 from Module.ConfigService import ConfigService
 
@@ -104,3 +106,66 @@ class NetUtils:
             return resp.json()
         except Exception:
             return None
+
+    async def request_with_retry_async(
+        self,
+        session: requests.Session,
+        method: str,
+        url: str,
+        *,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        timeout: Optional[float] = None,
+        retries: Optional[int] = None,
+        retry_on_status: Iterable[int] = (429, 500, 502, 503, 504),
+    ) -> Tuple[Optional[httpx.Response], Optional[str]]:
+        """
+        异步版本，返回 (response, error_label)。error_label 为 None 表示成功。
+        复用 requests.Session 的 cookies 到 httpx.AsyncClient。
+        """
+        t = timeout if timeout is not None else self.timeout
+        r = retries if retries is not None else int(self.default_retries)
+        backoff_ms = int(self.base_backoff_ms)
+
+        cookies = session.cookies.get_dict() if session is not None else {}
+        headers = {}
+        try:
+            headers = dict(session.headers)
+        except Exception:
+            headers = {}
+
+        async with httpx.AsyncClient(timeout=t) as client:
+            client.cookies.update(cookies)
+            if headers:
+                client.headers.update(headers)
+
+            for attempt in range(1, r + 1):
+                resp = None
+                exc: Optional[BaseException] = None
+                try:
+                    resp = await client.request(method=method.upper(), url=url, params=params, data=data)
+                    # 成功类状态直接返回
+                    if resp.status_code < 400 and self.classify_error(resp, None) in ("ok",):
+                        return resp, None
+                    # 可重试状态码
+                    if resp.status_code in retry_on_status:
+                        label = self.classify_error(resp, None)
+                    else:
+                        # 非可重试错误，直接返回
+                        label = self.classify_error(resp, None)
+                        return resp, label
+                except BaseException as e:
+                    exc = e
+                    label = self.classify_error(None, exc)
+
+                # 需要重试
+                if attempt >= r:
+                    return resp, label
+                # 指数退避 + 抖动
+                sleep_ms = min(backoff_ms, int(self.max_backoff_ms))
+                jitter = random.uniform(1 - self.jitter_ratio, 1 + self.jitter_ratio)
+                await asyncio.sleep(sleep_ms * jitter / 1000.0)
+                backoff_ms = min(backoff_ms * 2, int(self.max_backoff_ms))
+                self.log.main("DEBUG", f"重试[{attempt}/{r-1}] {method} {url}，原因: {label}")
+
+        return None, "unknown"

@@ -7,3 +7,4 @@ lxml
 colorlog
 flask
 setuptools
+httpx>=0.27.0

@@ -1,20 +1,20 @@
 import datetime
 import time
-import toml
 from Module import Logging
+from Module.ConfigService import ConfigService
 class Timer: # 定时任务类，执行定时任务的时间计时逻辑
     def __init__(self):
         self.log = Logging.Log("Timer")
-        with open("./config.toml","r",encoding="utf-8") as f:
-            self.config = toml.load(f)
+        # 统一由 ConfigService 提供配置
+        self.config = ConfigService().get_time()
         # 原始字符串（用于展示/返回）
-        self.start_time_str = self.config["Time"]["Start_time"]
-        self.end_time_str = self.config["Time"]["End_time"]
+        self.start_time_str = self.config["Start_time"]
+        self.end_time_str = self.config["End_time"]
         # 解析为 time 对象（用于比较）
         self.start_time = self._parse_time(self.start_time_str)
         self.end_time = self._parse_time(self.end_time_str)
-        self.retry_time = self.config["Time"]["retry_time"]
-        self.interval = self.config["Time"]["Interval"]
+        self.retry_time = self.config["retry_time"]
+        self.interval = self.config["Interval"]
     def run(self):
         while True:
             now_dt = datetime.datetime.now()

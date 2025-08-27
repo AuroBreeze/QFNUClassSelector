@@ -16,7 +16,7 @@ class Log:
                 cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, name="main", level="INFO"):
+    def __init__(self, name="main", level="DEBUG"):
         if self._initialized:
             # 确保名称不会被后续调用修改
             return
@@ -24,30 +24,22 @@ class Log:
         self.name = name
         # 使用专用命名日志器
         self.logger = colorlog.getLogger("QFNUClassSelector")
-        # 清除并禁用传播
-        self.logger.handlers = []
         self.logger.propagate = False
-        # 设置日志级别
-        if level == "INFO":
-            self.logger.setLevel(colorlog.INFO)
-        elif level == "DEBUG":
-            self.logger.setLevel(colorlog.DEBUG)
-        # 修改日志格式，包含实例名称
-        self.formatter = colorlog.ColoredFormatter(
-            f'%(log_color)s[%(asctime)s][{self.name}][%(levelname)s] [%(message)s]',
-            datefmt='%Y-%m-%d %H:%M:%S',
-            log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-            })
-        self.handler = colorlog.StreamHandler()
-        self.handler.name = 'custom_stream_handler'
-        self.handler.setLevel(colorlog.INFO if level == "INFO" else colorlog.DEBUG)
-        # 修改日志格式，使其更美观
-        self.formatter = colorlog.ColoredFormatter(
+        # 计算日志级别：优先环境变量 LOG_LEVEL，其次参数，默认 DEBUG
+        env_level = os.getenv("LOG_LEVEL", "").upper()
+        level_map = {
+            "DEBUG": colorlog.DEBUG,
+            "INFO": colorlog.INFO,
+            "WARNING": colorlog.WARNING,
+            "WARN": colorlog.WARNING,
+            "ERROR": colorlog.ERROR,
+            "CRITICAL": colorlog.CRITICAL,
+        }
+        chosen_level = level_map.get(env_level, level_map.get(level, colorlog.DEBUG))
+        self.logger.setLevel(chosen_level)
+
+        # 控制台格式器（彩色）
+        console_formatter = colorlog.ColoredFormatter(
             '%(log_color)s[%(asctime)s][%(name)s][%(levelname)s] [%(message)s]',
             datefmt='%Y-%m-%d %H:%M:%S',
             log_colors={
@@ -57,7 +49,12 @@ class Log:
                 'ERROR': 'red',
                 'CRITICAL': 'bold_red',
             })
-        
+        # 控制台处理器
+        self.handler = colorlog.StreamHandler()
+        self.handler.name = 'custom_stream_handler'
+        self.handler.setLevel(chosen_level)
+        self.handler.setFormatter(console_formatter)
+
         # 添加文件处理器
         log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'log')
         if not os.path.exists(log_dir):
@@ -75,9 +72,8 @@ class Log:
             if handler.name == 'custom_file_handler':
                 self.logger.removeHandler(handler)
         self.logger.addHandler(self.file_handler)
-        
+
         # 确保控制台处理器也被添加
-        # self.handler.setFormatter(self.formatter)
         # 确保只保留一个同名控制台处理器
         for handler in self.logger.handlers[:]:
             if handler.name == 'custom_stream_handler':

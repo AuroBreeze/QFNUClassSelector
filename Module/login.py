@@ -9,7 +9,7 @@ from Module.NetUtils import NetUtils
 
 
 class Login:
-    def __init__(self):
+    def __init__(self, idx: int = 0):
         self.session = requests.Session()
 
         self.log = Logging.Log("Login")
@@ -18,6 +18,11 @@ class Login:
         self.login_url = "http://zhjw.qfnu.edu.cn/jsxsd/xk/LoginToXkLdap"
         self.net = NetUtils()
         self.timeout = ConfigService().get_value("Time", "request_timeout_sec", 10)
+        # account index for multi-account mode
+        self.idx = max(0, int(idx))
+        # Get username from config
+        login_cfg = ConfigService().get_login()
+        self.username = login_cfg.get("username", [])[self.idx] if self.idx < len(login_cfg.get("username", [])) else f"账号{self.idx+1}"
     def Get_pic(self):
         resp, err = self.net.request_with_retry(self.session, "GET", self.url_pic, timeout=self.timeout)
         if err is not None and err not in ("ok",):
@@ -33,8 +38,12 @@ class Login:
 
     def Base_user(self):
         login_cfg = ConfigService().get_login()
-        user_account = login_cfg.get("username", [""])[0]
-        user_password = login_cfg.get("password", [""])[0]
+        usernames = login_cfg.get('username', [""])
+        passwords = login_cfg.get('password', [""])
+        # 容错：索引越界时回退到第0个
+        idx = self.idx if self.idx < len(usernames) and self.idx < len(passwords) else 0
+        user_account = usernames[idx]
+        user_password = passwords[idx]
         if not user_account or not user_password:
             self.log.main("ERROR", "账号或密码为空，请检查config.toml")
             raise ValueError("empty credentials")
@@ -92,12 +101,10 @@ class Login:
             # 往外抛出，让调用方感知错误
             raise
 
-        self.log.main("INFO", "登录成功")
+        self.log.main("INFO", f"✅ 账号 [{self.username}] 登录成功")
         return self.session
 
 if __name__ == '__main__':
     login = Login()
     login.Main()
-
-
 

@@ -100,7 +100,7 @@ class Submit_ClassSelection:
             return False
 
 class Select_Class:
-    def __init__(self, session):
+    def __init__(self, session, allowed_courses=None, shared_completed: set | None = None, multiple_judge_map: dict | None = None):
         self.session = session  # 继承session数据
         self.log = Logging.Log("Select_Class")
         self.request_timeout = ConfigService().get_value("Time","request_timeout_sec",10)
@@ -122,10 +122,19 @@ class Select_Class:
         self.url_list = Load_Source().Return_Data("URL")  # 载入默认选课列表
         self.name_url = ["选修选课","本学期计划选课","专业内跨年级选课","计划外选课","公选课选课","辅修选课"]
 
-        self.course_name = Load_Source().Return_Data("Name")  # 载入课程名称列表
+        all_courses = Load_Source().Return_Data("Name")  # 载入课程名称列表
+        # 按需过滤允许的课程（多账号分配）
+        if allowed_courses is not None:
+            self.course_name = [c for c in all_courses if c in set(allowed_courses)]
+        else:
+            self.course_name = all_courses
         self.params = Load_Source().Return_Data("Params")  # 载入默认请求参数
         self.data = Load_Source().Return_Data("Data")  # 载入默认请求数据
         self.sleep_time = Load_Source().Return_Data("Interval")
+
+        # 跨账号协调：完成集合 + 多选标志映射（课程->是否允许多账号同时抢）
+        self._shared_completed = shared_completed
+        self._multiple_judge_map = multiple_judge_map or {}
 
         self.jx0404id = None
         self.jx02id_get = None
@@ -203,6 +212,11 @@ class Select_Class:
             for index, courses in self.Order_fail.items():
                 index = int(index)
                 for name in courses:
+                    # 若该课程在跨账号已完成且不允许多账号重复，跳过
+                    if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                        if name in self._shared_completed:
+                            self.log.main("INFO", f"⏭️ 跳过已全局完成课程：{name}")
+                            continue
                     try:
                         judge_submit = False
                         total = len(self.params[name])
@@ -222,6 +236,9 @@ class Select_Class:
                                 if judge_submit:
                                     self.log.main("INFO",
                                                   f"✅ {name}选课成功，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
+                                    # 标记全局完成（若不允许多账号重复）
+                                    if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                                        self._shared_completed.add(name)
                                     # 取消剩余任务
                                     for other in tasks:
                                         if not other.done():
@@ -254,6 +271,13 @@ class Select_Class:
 
     async def default_order(self):
         for name in list(self.course_name):
+            # 若该课程在跨账号已完成且不允许多账号重复，跳过
+            if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                if name in self._shared_completed:
+                    self.log.main("INFO", f"⏭️ 跳过已全局完成课程：{name}")
+                    if name in self.course_name:
+                        self.course_name.remove(name)
+                    continue
             for index in range(len(self.url_list)):
                 try:
                     judge_submit = False
@@ -273,6 +297,9 @@ class Select_Class:
                                                                                          self.jx02id_get).main)
                             if judge_submit:
                                 self.log.main("INFO", f"✅ {name}选课成功，选课所在页面:{self.name_url[index]}，选课网址:{self.url_list[index]}")
+                                # 标记全局完成（若不允许多账号重复）
+                                if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                                    self._shared_completed.add(name)
                                 # 取消剩余任务
                                 for other in tasks:
                                     if not other.done():
@@ -306,6 +333,13 @@ class Select_Class:
                 index = int(index)
                 # 不修改url_list，避免索引错位
                 for name in list(self.course_name):
+                    # 若该课程在跨账号已完成且不允许多账号重复，跳过
+                    if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                        if name in self._shared_completed:
+                            self.log.main("INFO", f"⏭️ 跳过已全局完成课程：{name}")
+                            if name in self.course_name:
+                                self.course_name.remove(name)
+                            continue
                     try:
                         judge_submit = False
                         total = len(self.params[name])
@@ -324,6 +358,9 @@ class Select_Class:
                                                                                              self.jx02id_get).main)
                                 if judge_submit:
                                     self.log.main("INFO", f"✅ {name}选课成功")
+                                    # 标记全局完成（若不允许多账号重复）
+                                    if self._shared_completed is not None and not self._multiple_judge_map.get(name, False):
+                                        self._shared_completed.add(name)
                                     # 取消剩余任务
                                     for other in tasks:
                                         if not other.done():

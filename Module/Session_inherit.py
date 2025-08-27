@@ -10,7 +10,7 @@ from Module.NetUtils import NetUtils
 class Session_Inherit:
     def __init__(self,index, session=None):
         # 可注入已有 session，未提供则内部登录
-        self.session = session or login.Login().Main()
+        self.session = session or login.Login(index).Main()
         self.log= Logging.Log("Inherit_Session")
         self.index = index  # 保存当前登录的序号
         # 统一配置来源
@@ -89,7 +89,7 @@ class Session_Inherit:
                 time.sleep(sleep_s)
     def Get_Session_New(self): # 重新获取session
         session_old = self.session
-        self.session = login.Login().Main()
+        self.session = login.Login(self.index).Main()
         if session_old.cookies.get_dict() !=self.session.cookies.get_dict():
             self.log.main("INFO", "Session重新获取成功")
             return True

@@ -305,12 +305,12 @@ Week_day = [["1","2",""],[""],[]] # 课程星期，可以填多个 星期一：1
 
 特别感谢以下贡献者：
 
-- [W1ndys](https://github.com/W1ndys) - 项目原型与核心功能开发
+- [W1ndys](https://github.com/W1ndys) - JSON数据分享和技术讨论
 - 所有贡献者和用户 - 感谢你们的反馈与支持
 
 ## 🔗 相关项目
 
-- [QFNUCourseSelector](https://github.com/W1ndys/QFNUCourseSelector) - 原版项目
+- [QFNUCourseSelector](https://github.com/W1ndys/QFNUCourseSelector) - W1ndys的项目
 ## 📄 开源协议
 
 本项目采用 [GNU General Public License v3.0](LICENSE) 开源协议。
